@@ -1,6 +1,7 @@
 import puz
 from clue import Clue
 from cell import Cell
+from state import State
 
 # date format = yy.mm.dd
 def save_puzzle(date):
@@ -35,14 +36,5 @@ def create_clues_down():
 
 def create_state():
 	p = puz.read('example.puz')
-	state = [[None for i in range(p.height)] for i in range(p.height)]
-	for row in range(p.height):
-		for col in range(p.height):
-			value = p.fill[row*p.width + col]
-			if value == "." :
-				state[row][col] = Cell("BLACK", False, None, None)
-			elif (row == 0 or col == 0 or state[row][col - 1].variety == "BLACK" or state[row - 1][col].variety == "BLACK"):
-				state[row][col] = Cell("WHITE", True, None, p.solution[row*p.width + col])
-			else :
-				state[row][col] = Cell("WHITE", False, None, p.solution[row*p.width + col])
+	state = State(p)
 	return state
