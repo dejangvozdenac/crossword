@@ -1,0 +1,3 @@
+import puz
+
+print "hi"
