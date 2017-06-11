@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Crossword Puzzle</title>
+    <meta name="description" content="crossword">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='puzzle.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  </head>
+
+  <body>
+    <!-- form submission -->
+    <form action="{{ url_for('new_puzzle') }}" id="new_puzzle" method="post">
+      <div class="form-group">
+        <label>Date:</label>
+        <input class="form-control" name="date" placeholder="yy.mm.dd"/>
+      </div>
+
+      <div class="form-group">
+        <button class="button" type="submit">Submit</button>
+      </div>
+    </form>
+  </body>
+</html>

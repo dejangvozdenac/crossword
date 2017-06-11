@@ -4,11 +4,13 @@
     <title>Crossword Puzzle</title>
     <meta name="description" content="crossword">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='puzzle.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   </head>
 
   <body>
     <center><h1>Crossword Puzzle</h1></center>
 
+    <!-- the crossword image -->
     <div id="wrapper">
       {% for row in state.array %}
         {% for cell in row %}
@@ -31,26 +33,45 @@
       {% endfor %}
     </div>
 
+    <!-- form submission -->
     <form action="{{ url_for('command') }}" id="command" method="post">
       <div class="form-group">
-        <input class="form-control" name="clue" placeholder="4a"/>
+        <b><label>Clue:</label></b>
+        <input class="form-control" name="clue" placeholder="4 a"/>
       </div>
+
       <div class="form-group">
+        <b><label>Letter position (optional):</label></b>
+        <input class="form-control" name="position" placeholder="3"/>
+      </div>
+
+      <div class="form-group">
+        <b><label>Solution:</label></b>
         <input class="form-control" name="solution" placeholder="aria"/>
       </div>
+
       <div class="form-group">
-        <button class="button" type="submit">Register</button>
+        <input type="submit" name="fill" value="fill"></button>
+        <input type="submit" name="fill" value="delete"></button>
       </div>
     </form>
 
-    <h3>Across</h3>
+    <!-- clues -->
+    <h2>Across</h2>
     {% for clue in cluesAcross %}
       <div>{{ clue.number ~ ". " ~ clue.clue }}</div>
     {% endfor %}
 
-    <h3>Down</h3>
+    <h2>Down</h2>
     {% for clue in cluesDown %}
       <div>{{ clue.number ~ ". " ~ clue.clue }}</div>
     {% endfor %}
+
+    <script>
+      $(document).click(function(event) {
+        var text = $(event.target).text();
+        console.log(text);
+      });
+    </script>
   </body>
 </html>

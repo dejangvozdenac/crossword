@@ -26,15 +26,30 @@ class State:
 		if self.array[row][col].variety == "WHITE":
 			self.array[row][col].letter = letter
 
+	def delete_letter_exact(self, row, col):
+		if self.array[row][col].variety == "WHITE":
+			self.array[row][col].letter = None
+
 	def submit_letter(self, place, offset, letter):
 		spl = place.split()
 		number = int(spl[0])
 		across = (spl[1] == "a")
 		row, col = self.parse_number(number)
+
 		if across:
 			self.submit_letter_exact(row, col + offset - 1, letter)
 		else:
 			self.submit_letter_exact(row + offset - 1, col, letter)
+
+	def delete_letter(self, place, offset):
+		spl = place.split()
+		number = int(spl[0])
+		across = (spl[1] == "a")
+		row, col = self.parse_number(number)
+		if across:
+			self.submit_letter_exact(row, col + offset - 1, None)
+		else:
+			self.submit_letter_exact(row + offset - 1, col, None)
 
 	def submit_word(self, place, word):
 		spl = place.split()
@@ -48,7 +63,19 @@ class State:
 			else:
 				row += 1
 
-	def check_solution(self, ):
+	def delete_word(self, place):
+		spl = place.split()
+		number = int(spl[0])
+		across = (spl[1] == "a")
+		row, col = self.parse_number(number)
+		while (row < len(self.array) and col < len(self.array) and self.array[row][col].variety != "BLACK"):
+			self.delete_letter_exact(row, col)
+			if across:
+				col += 1
+			else:
+				row += 1
+
+	def check_solution(self):
 		for row in range(len(self.array)):
 			for col in range(len(self.array)):
 				if self.array[row][col].letter != self.array[row][col].solution:
