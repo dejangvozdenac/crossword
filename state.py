@@ -30,19 +30,19 @@ class State:
 		spl = place.split()
 		number = int(spl[0])
 		across = (spl[1] == "a")
-		row, col = parse_number(number)
+		row, col = self.parse_number(number)
 		if across:
-			submit_letter_exact(row, col + offset, letter)
+			self.submit_letter_exact(row, col + offset - 1, letter)
 		else:
-			submit_letter_exact(row + offset, col, letter)
+			self.submit_letter_exact(row + offset - 1, col, letter)
 
 	def submit_word(self, place, word):
 		spl = place.split()
 		number = int(spl[0])
 		across = (spl[1] == "a")
-		row, col = parse_number(number)
+		row, col = self.parse_number(number)
 		for i in range(len(word)):
-			submit_letter_exact(row, col, word[i])
+			self.submit_letter_exact(row, col, word[i])
 			if across:
 				col += 1
 			else:
