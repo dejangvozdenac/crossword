@@ -10,7 +10,7 @@
     <center><h1>Crossword Puzzle</h1></center>
 
     <div id="wrapper">
-      {% for row in state %}
+      {% for row in state.array %}
         {% for cell in row %}
           {% if cell.variety == "BLACK" %}
             <div class="filled"></div>
@@ -30,6 +30,18 @@
         {% endfor %}
       {% endfor %}
     </div>
+
+    <form action="{{ url_for('command') }}" id="command" method="post">
+      <div class="form-group">
+        <input class="form-control" name="clue" placeholder="4a"/>
+      </div>
+      <div class="form-group">
+        <input class="form-control" name="solution" placeholder="aria"/>
+      </div>
+      <div class="form-group">
+        <button class="button" type="submit">Register</button>
+      </div>
+    </form>
 
     <h3>Across</h3>
     {% for clue in cluesAcross %}

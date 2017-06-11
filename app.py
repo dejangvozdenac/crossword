@@ -2,7 +2,7 @@ import puz
 import parser
 from cell import Cell
 from clue import Clue
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import requests
 app = Flask(__name__)
 
@@ -14,8 +14,12 @@ def index():
 
   return render_template('index.html', state=state, cluesAcross=cluesAcross, cluesDown=cluesDown)
 
-# @app.route("/register", methods=["GET", "POST"])
-# def register():
+@app.route("/command/", methods=["POST"])
+def command():
+  name = request.form['yourname']
+  email = request.form['youremail']
+
+  return redirect(url_for("index"))
 
 if __name__ == "__main__":
-  app.run()
+  app.run(debug=True)
