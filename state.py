@@ -16,11 +16,16 @@ class State:
 				else :
 					self.array[row][col] = Cell("WHITE", None, None, puzzle.solution[row*puzzle.width + col])
 
-	def parse_number(self, number):
+	def parse_number(self, number, across):
 		for row in range(len(self.array)):
 			for col in range(len(self.array)):
 				if self.array[row][col].numbered == number:
-					return row, col
+					if across and (col != 0 or self.array[row][col-1].variety != "BLACK"):
+						return row, col
+					elif not across and (row != 0 or self.array[row-1][col].variety != "BLACK"):
+						return row, col
+					else:
+						return None, None
 
 	def submit_letter_exact(self, row, col, letter):
 		if self.array[row][col].variety == "WHITE":
@@ -32,9 +37,18 @@ class State:
 
 	def submit_letter(self, place, offset, letter):
 		spl = place.split()
-		number = int(spl[0])
+
+		number = None
+		try:
+			number = int(spl[0])
+		except Exception, e:
+			return
+	
 		across = (spl[1] == "a")
-		row, col = self.parse_number(number)
+		row, col = self.parse_number(number, across)
+
+		if not row:
+			return
 
 		if across:
 			self.submit_letter_exact(row, col + offset - 1, letter)
@@ -43,9 +57,19 @@ class State:
 
 	def delete_letter(self, place, offset):
 		spl = place.split()
-		number = int(spl[0])
+		
+		number = None
+		try:
+			number = int(spl[0])
+		except Exception, e:
+			return
+
 		across = (spl[1] == "a")
-		row, col = self.parse_number(number)
+		row, col = self.parse_number(number, across)
+
+		if not row:
+			return
+
 		if across:
 			self.submit_letter_exact(row, col + offset - 1, None)
 		else:
@@ -53,9 +77,19 @@ class State:
 
 	def submit_word(self, place, word):
 		spl = place.split()
-		number = int(spl[0])
+		
+		number = None
+		try:
+			number = int(spl[0])
+		except Exception, e:
+			return
+
 		across = (spl[1] == "a")
-		row, col = self.parse_number(number)
+		row, col = self.parse_number(number, across)
+
+		if not row:
+			return
+
 		for i in range(len(word)):
 			self.submit_letter_exact(row, col, word[i])
 			if across:
@@ -65,9 +99,19 @@ class State:
 
 	def delete_word(self, place):
 		spl = place.split()
-		number = int(spl[0])
+		
+		number = None
+		try:
+			number = int(spl[0])
+		except Exception, e:
+			return
+
 		across = (spl[1] == "a")
-		row, col = self.parse_number(number)
+		row, col = self.parse_number(number, across)
+
+		if not row:
+			return
+
 		while (row < len(self.array) and col < len(self.array) and self.array[row][col].variety != "BLACK"):
 			self.delete_letter_exact(row, col)
 			if across:
