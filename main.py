@@ -2,14 +2,6 @@ import puz
 from clue import Clue
 from cell import Cell
 
-class Clue:
-	def __init__(self, number, across, clue, answer):
- 		self.number = number
-		self.across = across
-		self.clue = clue
-		self.answer = answer
-
-
 p = puz.read('example.puz')
 
 numbering = p.clue_numbering()
@@ -20,13 +12,13 @@ for clue in numbering.across:
 	answer = ''.join(
         p.solution[clue['cell'] + i]
         for i in range(clue['len']))
-	cluesAcross.append(Clue(clue['num'], True, clue['clue'], answer))
+	cluesAcross.append(Clue(clue['num'], True, clue['clue'], answer, False))
 
 for clue in numbering.down:
 	answer = ''.join(
         p.solution[clue['cell'] + i]
         for i in range(clue['len']))
-	cluesDown.append(Clue(clue['num'], False, clue['clue'], answer))
+	cluesDown.append(Clue(clue['num'], False, clue['clue'], answer, False))
 
 
 state = [[None for i in range(p.height)] for i in range(p.height)]
