@@ -20,9 +20,9 @@ class State:
 		for row in range(len(self.array)):
 			for col in range(len(self.array)):
 				if self.array[row][col].numbered == number:
-					if across and (col != 0 or self.array[row][col-1].variety != "BLACK"):
+					if across and (col == 0 or self.array[row][col-1].variety == "BLACK"):
 						return row, col
-					elif not across and (row != 0 or self.array[row-1][col].variety != "BLACK"):
+					elif not across and (row == 0 or self.array[row-1][col].variety == "BLACK"):
 						return row, col
 					else:
 						return None, None
@@ -47,7 +47,7 @@ class State:
 		across = (spl[1] == "a")
 		row, col = self.parse_number(number, across)
 
-		if not row:
+		if row is None:
 			return
 
 		if across:
@@ -67,7 +67,7 @@ class State:
 		across = (spl[1] == "a")
 		row, col = self.parse_number(number, across)
 
-		if not row:
+		if row is None:
 			return
 
 		if across:
@@ -87,7 +87,7 @@ class State:
 		across = (spl[1] == "a")
 		row, col = self.parse_number(number, across)
 
-		if not row:
+		if row is None:
 			return
 
 		for i in range(len(word)):
@@ -109,7 +109,7 @@ class State:
 		across = (spl[1] == "a")
 		row, col = self.parse_number(number, across)
 
-		if not row:
+		if row is None:
 			return
 
 		while (row < len(self.array) and col < len(self.array) and self.array[row][col].variety != "BLACK"):
@@ -122,6 +122,6 @@ class State:
 	def check_solution(self):
 		for row in range(len(self.array)):
 			for col in range(len(self.array)):
-				if self.array[row][col].letter != self.array[row][col].solution:
+				if self.array[row][col].letter != self.array[row][col].answer:
 					return False
 		return True
