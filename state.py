@@ -3,9 +3,9 @@ import puz
 
 class State:
 	def __init__(self, puzzle):
-	    self.array = [[None for i in range(puzzle.height)] for i in range(puzzle.height)]
-	    number = 1
-	    for row in range(puzzle.height):
+		self.array = [[None for i in range(puzzle.height)] for i in range(puzzle.height)]
+		number = 1
+		for row in range(puzzle.height):
 			for col in range(puzzle.height):
 				value = puzzle.fill[row*puzzle.width + col]
 				if value == "." :
@@ -54,4 +54,3 @@ class State:
 				if self.array[row][col].letter != self.array[row][col].solution:
 					return False
 		return True
-
