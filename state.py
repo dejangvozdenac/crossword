@@ -16,17 +16,17 @@ class State:
 				else :
 					self.array[row][col] = Cell("WHITE", None, None, puzzle.solution[row*puzzle.width + col])
 
-	def parse_number(number):
+	def parse_number(self, number):
 		for row in range(len(self.array)):
 			for col in range(len(self.array)):
 				if self.array[row][col].numbered == number:
 					return row, col
 
-	def submit_letter_exact(row, col, letter):
+	def submit_letter_exact(self, row, col, letter):
 		if self.array[row][col].variety == "WHITE":
 			self.array[row][col].letter = letter
 
-	def submit_letter(place, offset, letter):
+	def submit_letter(self, place, offset, letter):
 		spl = place.split()
 		number = int(spl[0])
 		across = (spl[1] == "a")
@@ -36,7 +36,7 @@ class State:
 		else:
 			submit_letter_exact(row + offset, col, letter)
 
-	def submit_word(place, word):
+	def submit_word(self, place, word):
 		spl = place.split()
 		number = int(spl[0])
 		across = (spl[1] == "a")
@@ -48,7 +48,7 @@ class State:
 			else:
 				row += 1
 
-	def check_solution():
+	def check_solution(self, ):
 		for row in range(len(self.array)):
 			for col in range(len(self.array)):
 				if self.array[row][col].letter != self.array[row][col].solution:
