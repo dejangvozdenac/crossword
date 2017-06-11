@@ -1,4 +1,5 @@
 import puz
+import os.path
 from clue import Clue
 from cell import Cell
 from state import State
@@ -12,8 +13,12 @@ def save_puzzle(date):
   with open("puzs/" + filename, 'w') as f:
     the_file.write(response.text)
     
-def create_clues_across():
-	p = puz.read('example.puz')
+def create_clues_across(date):
+	path_name = "puzs/" + date + ".puz"
+	if not os.path.isfile(path_name):
+		save_puzzle(date)
+	p = puz.read(path_name)
+
 	numbering = p.clue_numbering()
 	cluesAcross = []
 	for clue in numbering.across:
@@ -23,8 +28,12 @@ def create_clues_across():
 		cluesAcross.append(Clue(clue['num'], True, clue['clue'], answer, False))
 	return cluesAcross
 
-def create_clues_down():
-	p = puz.read('example.puz')
+def create_clues_down(date):
+	path_name = "puzs/" + date + ".puz"
+	if not os.path.isfile(path_name):
+		save_puzzle(date)
+	p = puz.read(path_name)
+
 	numbering = p.clue_numbering()
 	cluesDown = []
 	for clue in numbering.down:
@@ -34,7 +43,11 @@ def create_clues_down():
 		cluesDown.append(Clue(clue['num'], False, clue['clue'], answer, False))
 	return cluesDown
 
-def create_state():
-	p = puz.read('example.puz')
+def create_state(date):
+	path_name = "puzs/" + date + ".puz"
+	if not os.path.isfile(path_name):
+		save_puzzle(date)
+	p = puz.read(path_name)
+	
 	state = State(p)
 	return state
