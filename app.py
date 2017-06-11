@@ -30,6 +30,10 @@ def index():
   global state, cluesAcross, cluesDown, correct
   return render_template('index.html', state=state, cluesAcross=cluesAcross, cluesDown=cluesDown, correct=correct)
 
+@app.route("/hello")
+def hello():
+  return "hello"
+
 @app.route("/command/", methods=["POST"])
 def command():
   global state, correct
@@ -55,4 +59,5 @@ def command():
   return redirect(url_for("index"))
 
 if __name__ == "__main__":
-  app.run(debug=True)
+  port = int(os.environ.get('PORT', 5000))
+  app.run(host='0.0.0.0', port=port)
