@@ -43,3 +43,11 @@ div {
   font-size: 26px;
   font-family: 'Helvetica Neue';
 }
+
+.correct {
+  color: green;
+}
+
+.incorrect {
+  color: red;
+}

@@ -1,3 +1,4 @@
+import requests
 import puz
 import os.path
 from clue import Clue
@@ -9,9 +10,9 @@ def save_puzzle(date):
   filename = date + ".puz"
   url = "http://www.jacobshufro.com/xwords2/puzs/" + filename
   response = requests.get(url)
-
-  with open("puzs/" + filename, 'w') as f:
-    the_file.write(response.text)
+  
+  with open("puzs/" + filename, 'wb') as f:
+    f.write(response.content)
     
 def create_clues_across(date):
 	path_name = "puzs/" + date + ".puz"
