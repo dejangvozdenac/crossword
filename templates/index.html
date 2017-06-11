@@ -12,13 +12,33 @@
     <div id="wrapper">
       {% for row in state %}
         {% for cell in row %}
-          {% if cell == "." %}
+          {% if cell.variety == "BLACK" %}
             <div class="filled"></div>
+          {% elif cell.numbered %}
+            <div class="empty numbered">
+              {% if cell.letter %}
+                <div class="letter">{{ cell.letter }}</div>
+              {% endif %}
+            </div>
           {% else %}
-            <div class="empty"></div>
+            <div class="empty">
+              {% if cell.letter %}
+                <div class="letter">{{ cell.letter }}</div>
+              {% endif %}
+            </div>
           {% endif %}
         {% endfor %}
       {% endfor %}
     </div>
+
+    <h3>Across</h3>
+    {% for clue in cluesAcross %}
+      <div>{{ clue.number ~ ". " ~ clue.clue }}</div>
+    {% endfor %}
+
+    <h3>Down</h3>
+    {% for clue in cluesDown %}
+      <div>{{ clue.number ~ ". " ~ clue.clue }}</div>
+    {% endfor %}
   </body>
 </html>

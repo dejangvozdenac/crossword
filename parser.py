@@ -2,6 +2,7 @@ import puz
 from clue import Clue
 from cell import Cell
 
+# date format = yy.mm.dd
 def save_puzzle(date):
   filename = date + ".puz"
   url = "http://www.jacobshufro.com/xwords2/puzs/" + filename
@@ -32,8 +33,6 @@ def create_clues_down():
 		cluesDown.append(Clue(clue['num'], False, clue['clue'], answer, False))
 	return cluesDown
 
-
-
 def create_state():
 	p = puz.read('example.puz')
 	state = [[None for i in range(p.height)] for i in range(p.height)]
@@ -42,7 +41,7 @@ def create_state():
 			value = p.fill[row*p.width + col]
 			if value == "." :
 				state[row][col] = Cell("BLACK", False, None, None)
-			elif (row == 0 or col == 0 or state[row-1][col-1].variety == "BLACK") :
+			elif (row == 0 or col == 0 or state[row][col - 1].variety == "BLACK" or state[row - 1][col].variety == "BLACK"):
 				state[row][col] = Cell("WHITE", True, None, p.solution[row*p.width + col])
 			else :
 				state[row][col] = Cell("WHITE", False, None, p.solution[row*p.width + col])
