@@ -1,0 +1,6 @@
+gunicorn==19.7.1
+httplib2==0.9.2
+puzpy==0.2.3
+pytz==2016.6.1
+six==1.10.0
+twilio==6.3.dev0
