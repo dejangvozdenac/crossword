@@ -19,10 +19,11 @@ def new_puzzle():
   elif request.method == "POST":
     date = request.form['date']
 
-    global cluesAcross, cluesDown, state
+    global cluesAcross, cluesDown, state, correct
     cluesAcross = parser.create_clues_across(date)
     cluesDown = parser.create_clues_down(date)
     state = parser.create_state(date)
+    correct = False
 
     return redirect(url_for("index"))
 
