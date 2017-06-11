@@ -1,4 +1,6 @@
 import puz
+from clue import Clue
+from cell import Cell
 
 class Clue:
 	def __init__(self, number, across, clue, answer):
@@ -31,4 +33,10 @@ state = [[None for i in range(p.height)] for i in range(p.height)]
 
 for row in range(p.height):
 	for col in range(p.height):
-		state[row][col] = p.fill[row*p.width + col]
+		value = p.fill[row*p.width + col]
+		if value == "." :
+			state[row][col] = Cell("BLACK", False, None, None)
+		elif (row == 0 or col == 0 or state[row-1][col-1].variety == "BLACK") :
+			state[row][col] = Cell("WHITE", True, None, p.solution[row*p.width + col])
+		else :
+			state[row][col] = Cell("WHITE", False, None, p.solution[row*p.width + col])
