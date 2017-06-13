@@ -16,16 +16,28 @@ class State:
 				else :
 					self.array[row][col] = Cell("WHITE", None, None, puzzle.solution[row*puzzle.width + col])
 
-	def parse_number(self, number, across):
+	def parse_number(self, number, is_across):
 		for row in range(len(self.array)):
 			for col in range(len(self.array)):
 				if self.array[row][col].numbered == number:
-					if across and (col == 0 or self.array[row][col-1].variety == "BLACK"):
+					if is_across and (col == 0 or self.array[row][col-1].variety == "BLACK"):
 						return row, col
-					elif not across and (row == 0 or self.array[row-1][col].variety == "BLACK"):
+					elif not is_across and (row == 0 or self.array[row-1][col].variety == "BLACK"):
 						return row, col
 					else:
 						return None, None
+
+	def parse_submission(self, place):
+		number, direction = place.split()
+		
+		try:
+			number = int(number)
+		except Exception, e:
+			return
+
+		is_across = (direction.lower() == "a")
+		row, col = self.parse_number(number, is_across)
+		return row, col, is_across
 
 	def submit_letter_exact(self, row, col, letter):
 		if self.array[row][col].variety == "WHITE":
@@ -36,85 +48,49 @@ class State:
 			self.array[row][col].letter = None
 
 	def submit_letter(self, place, offset, letter):
-		spl = place.split()
-
-		number = None
-		try:
-			number = int(spl[0])
-		except Exception, e:
-			return
-	
-		across = (spl[1] == "a")
-		row, col = self.parse_number(number, across)
+		row, col, is_across = self.parse_submission(place)
 
 		if row is None:
 			return
 
-		if across:
+		if is_across:
 			self.submit_letter_exact(row, col + offset - 1, letter)
 		else:
 			self.submit_letter_exact(row + offset - 1, col, letter)
 
 	def delete_letter(self, place, offset):
-		spl = place.split()
-		
-		number = None
-		try:
-			number = int(spl[0])
-		except Exception, e:
-			return
-
-		across = (spl[1] == "a")
-		row, col = self.parse_number(number, across)
+		row, col, is_across = self.parse_submission(place)
 
 		if row is None:
 			return
 
-		if across:
+		if is_across:
 			self.submit_letter_exact(row, col + offset - 1, None)
 		else:
 			self.submit_letter_exact(row + offset - 1, col, None)
 
 	def submit_word(self, place, word):
-		spl = place.split()
-		
-		number = None
-		try:
-			number = int(spl[0])
-		except Exception, e:
-			return
-
-		across = (spl[1] == "a")
-		row, col = self.parse_number(number, across)
+		row, col, is_across = self.parse_submission(place)
 
 		if row is None:
 			return
 
 		for i in range(len(word)):
 			self.submit_letter_exact(row, col, word[i])
-			if across:
+			if is_across:
 				col += 1
 			else:
 				row += 1
 
 	def delete_word(self, place):
-		spl = place.split()
-		
-		number = None
-		try:
-			number = int(spl[0])
-		except Exception, e:
-			return
-
-		across = (spl[1] == "a")
-		row, col = self.parse_number(number, across)
+		row, col, is_across = self.parse_submission(place)
 
 		if row is None:
 			return
 
 		while (row < len(self.array) and col < len(self.array) and self.array[row][col].variety != "BLACK"):
 			self.delete_letter_exact(row, col)
-			if across:
+			if is_across:
 				col += 1
 			else:
 				row += 1
