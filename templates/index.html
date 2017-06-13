@@ -1,82 +1,83 @@
-<!doctype html>
-<html>
-  <head>
-    <title>Crossword Puzzle</title>
-    <meta name="description" content="crossword">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='puzzle.css') }}">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  </head>
+{% extends "layout.html" %}
 
-  <body>
-    <center><h1>Crossword Puzzle</h1></center>
+{% block main %}
+  <center><h1>Crossword Puzzle</h1></center>
 
-    {% if correct %}
-      <script>alert("Correct!");</script>
-    {% endif %}
+  {% if correct %}
+    <script>alert("Correct!");</script>
+  {% endif %}
 
-    <!-- the crossword image -->
-    <div id="wrapper">
-      {% for row in state.array %}
-        {% for cell in row %}
-          {% if cell.variety == "BLACK" %}
-            <div class="filled"></div>
-          {% elif cell.numbered %}
-            <div class="empty numbered">
-              {% if cell.letter %}
-                <div class="letter">{{ cell.letter }}</div>
-              {% endif %}
-            </div>
-          {% else %}
-            <div class="empty">
-              {% if cell.letter %}
-                <div class="letter">{{ cell.letter }}</div>
-              {% endif %}
-            </div>
-          {% endif %}
-        {% endfor %}
+  <div id="wrap">
+    <div class="col">
+      <!-- clues -->
+      <h2>Across</h2>
+      {% for clue in cluesAcross %}
+        <div>{{ clue.number ~ ". " ~ clue.clue }}</div>
       {% endfor %}
     </div>
 
-    <!-- form submission -->
-    <form action="{{ url_for('command') }}" id="command" method="post">
-      <div class="form-group">
-        <b><label>Clue:</label></b>
-        <input class="form-control" name="clue" placeholder="4 a"/>
+    <div class="colgut">
+      <!-- the crossword image -->
+      <div id="wrapper">
+        {% for row in state.array %}
+          {% for cell in row %}
+            {% if cell.variety == "BLACK" %}
+              <div class="filled"></div>
+            {% elif cell.numbered %}
+              <div class="empty numbered">
+                {% if cell.letter %}
+                  <div class="letter">{{ cell.letter }}</div>
+                {% endif %}
+              </div>
+            {% else %}
+              <div class="empty">
+                {% if cell.letter %}
+                  <div class="letter">{{ cell.letter }}</div>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
       </div>
 
-      <div class="form-group">
-        <b><label>Letter position (optional):</label></b>
-        <input class="form-control" name="position" placeholder="3"/>
-      </div>
+      <!-- form submission -->
+      <form action="{{ url_for('command') }}" id="command" method="post">
+        <div class="form-group">
+          <b><label>Clue:</label></b>
+          <input class="form-control" name="clue" placeholder="4 a"/>
+        </div>
 
-      <div class="form-group">
-        <b><label>Solution:</label></b>
-        <input class="form-control" name="solution" placeholder="aria"/>
-      </div>
+        <div class="form-group">
+          <b><label>Letter position (optional):</label></b>
+          <input class="form-control" name="position" placeholder="3"/>
+        </div>
 
-      <div class="form-group">
-        <input type="submit" name="command_type" value="fill"></button>
-        <input type="submit" name="command_type" value="delete"></button>
-        <input type="submit" name="command_type" value="check"></button>
-      </div>
-    </form>
+        <div class="form-group">
+          <b><label>Solution:</label></b>
+          <input class="form-control" name="solution" placeholder="aria"/>
+        </div>
 
-    <!-- clues -->
-    <h2>Across</h2>
-    {% for clue in cluesAcross %}
-      <div>{{ clue.number ~ ". " ~ clue.clue }}</div>
-    {% endfor %}
+        <div class="form-group">
+          <input type="submit" name="command_type" value="Fill"></button>
+          <input type="submit" name="command_type" value="Delete"></button>
+          <input type="submit" name="command_type" value="Check"></button>
+          <input type="submit" name="command_type" value="New Puzzle"></button>
+        </div>
+      </form>
+    </div>
 
-    <h2>Down</h2>
-    {% for clue in cluesDown %}
-      <div>{{ clue.number ~ ". " ~ clue.clue }}</div>
-    {% endfor %}
+    <div class="col">
+      <h2>Down</h2>
+      {% for clue in cluesDown %}
+        <div>{{ clue.number ~ ". " ~ clue.clue }}</div>
+      {% endfor %}
+    </div>
+  </div>
 
-    <script>
-      $(document).click(function(event) {
-        var text = $(event.target).text();
-        console.log(text);
-      });
-    </script>
-  </body>
-</html>
+  <script>
+    $(document).click(function(event) {
+      var text = $(event.target).text();
+      console.log(text);
+    });
+  </script>
+{% endblock %}

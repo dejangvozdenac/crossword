@@ -30,11 +30,12 @@ def new_puzzle():
 @app.route("/")
 def index():
   global state, cluesAcross, cluesDown, correct
-  return render_template('index.html', state=state, cluesAcross=cluesAcross, cluesDown=cluesDown, correct=correct)
 
-@app.route("/hello")
-def hello():
-  return "hello"
+  # puzzle is not set up
+  if not cluesAcross:
+    return redirect(url_for("new_puzzle"))
+
+  return render_template('index.html', state=state, cluesAcross=cluesAcross, cluesDown=cluesDown, correct=correct)
 
 @app.route("/command/", methods=["POST"])
 def command():
@@ -44,19 +45,21 @@ def command():
   solution = request.form['solution'].upper()
   command_type = request.form['command_type']
 
-  if command_type == "fill":
+  if command_type == "Fill":
     if position:
       state.submit_letter(clue, int(position), solution)
     else:
       state.submit_word(clue, solution)
-  elif command_type == "delete":
+  elif command_type == "Delete":
     if position:
         state.delete_letter(clue, int(position))
     else:
       state.delete_word(clue)
-  elif command_type == "check":
+  elif command_type == "Check":
     if state.check_solution():
       correct = True
+  elif command_type == "New Puzzle":
+    return redirect(url_for("new_puzzle"))
 
   return redirect(url_for("index"))
 
