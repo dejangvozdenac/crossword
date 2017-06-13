@@ -9,7 +9,7 @@ app = Flask(__name__)
 cluesAcross = None
 cluesDown = None
 state = None
-correct = False
+check = None
 
 @app.route("/new_puzzle", methods=["GET", "POST"])
 def new_puzzle():
@@ -19,27 +19,27 @@ def new_puzzle():
   elif request.method == "POST":
     date = request.form['date']
 
-    global cluesAcross, cluesDown, state, correct
+    global cluesAcross, cluesDown, state, check
     cluesAcross = parser.create_clues_across(date)
     cluesDown = parser.create_clues_down(date)
     state = parser.create_state(date)
-    correct = False
+    check = None
 
     return redirect(url_for("index"))
 
 @app.route("/")
 def index():
-  global state, cluesAcross, cluesDown, correct
+  global state, cluesAcross, cluesDown, check
 
   # puzzle is not set up
   if not cluesAcross:
     return redirect(url_for("new_puzzle"))
 
-  return render_template('index.html', state=state, cluesAcross=cluesAcross, cluesDown=cluesDown, correct=correct)
+  return render_template('index.html', state=state, cluesAcross=cluesAcross, cluesDown=cluesDown, check=check)
 
 @app.route("/command/", methods=["POST"])
 def command():
-  global state, correct
+  global state, check
   clue = request.form['clue']
   position = request.form['position']
   solution = request.form['solution'].upper()
@@ -57,7 +57,9 @@ def command():
       state.delete_word(clue)
   elif command_type == "Check":
     if state.check_solution():
-      correct = True
+      check = True
+    else:
+      check = False
   elif command_type == "New Puzzle":
     return redirect(url_for("new_puzzle"))
 
