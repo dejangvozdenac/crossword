@@ -10,6 +10,7 @@ cluesAcross = None
 cluesDown = None
 state = None
 check = None
+check_displayed = True
 
 @app.route("/new_puzzle", methods=["GET", "POST"])
 def new_puzzle():
@@ -19,17 +20,18 @@ def new_puzzle():
   elif request.method == "POST":
     date = request.form['date']
 
-    global cluesAcross, cluesDown, state, check
+    global cluesAcross, cluesDown, state, check, check_displayed
     cluesAcross = parser.create_clues_across(date)
     cluesDown = parser.create_clues_down(date)
     state = parser.create_state(date)
     check = None
+    check_displayed = True
 
     return redirect(url_for("index"))
 
 @app.route("/")
 def index():
-  global state, cluesAcross, cluesDown, check
+  global state, cluesAcross, cluesDown, check, check_displayed
 
   # puzzle is not set up
   if not cluesAcross:
@@ -39,7 +41,12 @@ def index():
 
 @app.route("/command/", methods=["POST"])
 def command():
-  global state, check
+  global state, check, check_displayed
+  
+  if check_displayed is False:
+    check_displayed = True
+    check = None
+
   clue = request.form['clue']
   position = request.form['position']
   solution = request.form['solution'].upper()
@@ -56,6 +63,7 @@ def command():
     else:
       state.delete_word(clue)
   elif command_type == "Check":
+    check_displayed = False
     if state.check_solution():
       check = True
     else:

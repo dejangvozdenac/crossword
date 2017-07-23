@@ -75,6 +75,8 @@ class State:
 		if row is None:
 			return
 
+		self.uncheck_solution()
+
 		for i in range(len(word)):
 			self.submit_letter_exact(row, col, word[i])
 			if is_across:
@@ -96,8 +98,22 @@ class State:
 				row += 1
 
 	def check_solution(self):
+		result = True
 		for row in range(len(self.array)):
 			for col in range(len(self.array)):
 				if self.array[row][col].letter != self.array[row][col].answer:
-					return False
-		return True
+					self.array[row][col].variety = "WHITE_INCORRECT"
+					result = False
+
+		for row in range(len(self.array)):
+			for col in range(len(self.array)):
+					print self.array[row][col].variety
+
+		return result
+
+	def uncheck_solution(self):
+		print "called"
+		for row in range(len(self.array)):
+			for col in range(len(self.array)):
+				if self.array[row][col].variety == "WHITE_INCORRECT":
+					self.array[row][col].variety = "WHITE"

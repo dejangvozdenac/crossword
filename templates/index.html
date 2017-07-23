@@ -28,17 +28,33 @@
             {% if cell.variety == "BLACK" %}
               <div class="filled"></div>
             {% elif cell.numbered %}
-              <div class="empty numbered">
-                {% if cell.letter %}
-                  <div class="letter">{{ cell.letter }}</div>
-                {% endif %}
-              </div>
+              {% if cell.variety == "WHITE_INCORRECT" %}
+                <div class="empty numbered incorrect">
+                  {% if cell.letter %}
+                    <div class="letter">{{ cell.letter }}</div>
+                  {% endif %}
+                </div>
+              {% else %}
+                <div class="empty numbered">
+                  {% if cell.letter %}
+                    <div class="letter">{{ cell.letter }}</div>
+                  {% endif %}
+                </div>
+              {% endif %}
             {% else %}
-              <div class="empty">
-                {% if cell.letter %}
-                  <div class="letter">{{ cell.letter }}</div>
-                {% endif %}
-              </div>
+              {% if cell.variety == "WHITE_INCORRECT" %}
+                <div class="empty incorrect">
+                  {% if cell.letter %}
+                    <div class="letter">{{ cell.letter }}</div>
+                  {% endif %}
+                </div>
+              {% else %}
+                <div class="empty">
+                  {% if cell.letter %}
+                    <div class="letter">{{ cell.letter }}</div>
+                  {% endif %}
+                </div>
+              {% endif %}
             {% endif %}
           {% endfor %}
         {% endfor %}
