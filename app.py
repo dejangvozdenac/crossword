@@ -43,9 +43,6 @@ def index():
 def command():
   global state, check, check_displayed
   
-  if check_displayed is False:
-    check_displayed = True
-    check = None
 
   clue = request.form['clue']
   position = request.form['position']
@@ -68,8 +65,15 @@ def command():
       check = True
     else:
       check = False
+  elif command_type == "Uncheck":
+    check_displayed = True
+    check = None
+    state.uncheck_solution()
   elif command_type == "New Puzzle":
     return redirect(url_for("new_puzzle"))
+
+  if check != None:
+    state.check_solution()
 
   return redirect(url_for("index"))
 

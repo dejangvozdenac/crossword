@@ -35,16 +35,17 @@ class State:
 		except Exception, e:
 			return
 
+
 		is_across = (direction.lower() == "a")
 		row, col = self.parse_number(number, is_across)
 		return row, col, is_across
 
 	def submit_letter_exact(self, row, col, letter):
-		if self.array[row][col].variety == "WHITE":
+		if self.array[row][col].variety != "BLACK":
 			self.array[row][col].letter = letter
 
 	def delete_letter_exact(self, row, col):
-		if self.array[row][col].variety == "WHITE":
+		if self.array[row][col].variety != "BLACK":
 			self.array[row][col].letter = None
 
 	def submit_letter(self, place, offset, letter):
@@ -75,8 +76,6 @@ class State:
 		if row is None:
 			return
 
-		self.uncheck_solution()
-
 		for i in range(len(word)):
 			self.submit_letter_exact(row, col, word[i])
 			if is_across:
@@ -104,6 +103,8 @@ class State:
 				if self.array[row][col].letter != self.array[row][col].answer:
 					self.array[row][col].variety = "WHITE_INCORRECT"
 					result = False
+				elif self.array[row][col].variety != "BLACK":
+					self.array[row][col].variety = "WHITE"
 
 		for row in range(len(self.array)):
 			for col in range(len(self.array)):
