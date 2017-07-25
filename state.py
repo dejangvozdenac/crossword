@@ -4,9 +4,12 @@ import puz
 class State:
 	def __init__(self, puzzle):
 		self.array = [[None for i in range(puzzle.height)] for i in range(puzzle.height)]
+		self.height = puzzle.height
+		self.width = puzzle.width
+
 		number = 1
 		for row in range(puzzle.height):
-			for col in range(puzzle.height):
+			for col in range(puzzle.width):
 				value = puzzle.fill[row*puzzle.width + col]
 				if value == "." :
 					self.array[row][col] = Cell("BLACK", None, None, None)
@@ -17,8 +20,8 @@ class State:
 					self.array[row][col] = Cell("WHITE", None, None, puzzle.solution[row*puzzle.width + col])
 
 	def parse_number(self, number, is_across):
-		for row in range(len(self.array)):
-			for col in range(len(self.array)):
+		for row in range(self.height):
+			for col in range(self.width):
 				if self.array[row][col].numbered == number:
 					if is_across and (col == 0 or self.array[row][col-1].variety == "BLACK"):
 						return row, col

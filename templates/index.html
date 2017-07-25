@@ -96,6 +96,9 @@
   </div>
 
   <script>
+  document.getElementById('wrapper').style.height = 30 * {{ state.height }} + "px";
+  document.getElementById('wrapper').style.width = 30 * {{ state.width }} + "px";
+
     $(document).click(function(event) {
       var clueObj = event.target;
       var text = $(clueObj).text();
