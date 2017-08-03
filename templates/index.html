@@ -16,7 +16,14 @@
       <!-- clues -->
       <h2>Across</h2>
       {% for clue in cluesAcross %}
-        <div>{{ clue.number ~ ". " ~ clue.clue }}</div>
+          {% if not clue.finished %}
+            <div>{{ clue.number ~ ". " ~ clue.clue }}</div>
+          {% endif %}
+      {% endfor %}
+      {% for clue in cluesAcross %}
+          {% if clue.finished %}
+            <div style="text-decoration: line-through">{{ clue.number ~ ". " ~ clue.clue }}</div>
+          {% endif %}
       {% endfor %}
     </div>
 
@@ -87,10 +94,17 @@
       </form>
     </div>
 
-    <div class="col">
+    <div class="colright">
       <h2>Down</h2>
       {% for clue in cluesDown %}
-        <div>{{ clue.number ~ ". " ~ clue.clue }}</div>
+        {% if not clue.finished %}
+          <div>{{ clue.number ~ ". " ~ clue.clue }}</div>
+        {% endif %}
+      {% endfor %}
+      {% for clue in cluesDown %}
+        {% if clue.finished %}
+          <div style="text-decoration: line-through">{{ clue.number ~ ". " ~ clue.clue }}</div>
+        {% endif %}
       {% endfor %}
     </div>
   </div>

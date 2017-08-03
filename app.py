@@ -51,14 +51,14 @@ def command():
 
   if command_type == "Fill":
     if position:
-      state.submit_letter(clue, int(position), solution)
+      state.submit_letter(clue, int(position), solution, cluesAcross, cluesDown)
     else:
-      state.submit_word(clue, solution)
+      state.submit_word(clue, solution, cluesAcross, cluesDown)
   elif command_type == "Delete":
     if position:
-        state.delete_letter(clue, int(position))
+        state.delete_letter(clue, int(position), cluesAcross, cluesDown)
     else:
-      state.delete_word(clue)
+      state.delete_word(clue, cluesAcross, cluesDown)
   elif command_type == "Check":
     check_displayed = False
     if state.check_solution():

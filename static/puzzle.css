@@ -52,4 +52,5 @@ div {
 
 #wrap { width:100%; margin:1em auto; padding:5px; overflow:hidden; background:#fff; min-width:30em; }
 .col { float:left; width:20%; padding:5px; background:#ddd; font-size: 12px;}
-.colgut { float:left; width:38%; padding:5px; margin:0 2%; }
+.colright { float:right; ; width:20%; padding:5px; background:#ddd; font-size: 12px;}
+.colgut { display:inline-block; width:50%; padding:5px; margin:0 2%; }
