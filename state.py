@@ -187,8 +187,13 @@ class State:
 		return result
 
 	def uncheck_solution(self):
-		print "called"
 		for row in range(len(self.array)):
 			for col in range(len(self.array)):
 				if self.array[row][col].variety == "WHITE_INCORRECT":
 					self.array[row][col].variety = "WHITE"
+
+	def get_ver_clue(self, x, y):
+		return self.ver_clues[x][y]
+
+	def get_hor_clue(self, x, y):
+		return self.hor_clues[x][y]

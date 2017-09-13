@@ -2,17 +2,8 @@
 
 {% block main %}
   <center><h1>Crossword Puzzle</h1></center>
-
-  {% if check is not none %}
-    {% if check %}
-      <script>alert("Correct!");</script>
-    {% else %}
-      <script>alert("Incorrect");</script>
-    {% endif %}
-  {% endif %}
-
   <div id="wrap">
-    <div class="col">
+    <div id="across" class="col">
       <!-- clues -->
       <h2>Across</h2>
       {% for clue in cluesAcross %}
@@ -94,7 +85,7 @@
       </form>
     </div>
 
-    <div class="colright">
+    <div id="down" class="colright">
       <h2>Down</h2>
       {% for clue in cluesDown %}
         {% if not clue.finished %}
@@ -110,11 +101,36 @@
   </div>
 
   <script>
-  document.getElementById('wrapper').style.height = 30 * {{ state.height }} + "px";
-  document.getElementById('wrapper').style.width = 30 * {{ state.width }} + "px";
+    document.getElementById('wrapper').style.height = 30 * {{ state.height }} + "px";
+    document.getElementById('wrapper').style.width = 30 * {{ state.width }} + "px";
+    
+    {% for row in range(0, state.width) %}
+      {% for col in range(0, state.height) %}
+        {% if state.array[row][col].variety != "BLACK" %}
+          localStorage.setItem("v_" + {{ row }} + "_" + {{ col }} , {{ state.ver_clues[row][col] }} );
+          localStorage.setItem("h_" + {{ row }} + "_" + {{ col }} , {{ state.hor_clues[row][col] }} );
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
 
-    $(document).click(function(event) {
+    localStorage.setItem("lastname", "Smith");
+
+    $(document).click(function(event) {      
       var clueObj = event.target;
+
+      if ($(clueObj)["0"].className == "empty" || $(clueObj)["0"].className == "empty numbered" || $(clueObj)["0"].className == "letter") {
+        x = Math.floor(($(clueObj).position().top - $(clueObj.parentNode).position().top) / 30)
+        y = Math.floor(($(clueObj).position().left - $(clueObj.parentNode).position().left) / 30)
+        x_order = localStorage.getItem("h_" + x + "_" + y)
+        y_order = localStorage.getItem("v_" + x + "_" + y)
+        acrossObj = document.getElementById('across').childNodes[2 * x_order + 5]
+        downObj   = document.getElementById('down').childNodes[2 * y_order + 3]
+        if ($("#clueText").val() == $(acrossObj).text().split(".")[0] + " " + acrossObj.parentNode.getElementsByTagName("h2")[0].innerHTML[0]) {
+          clueObj = downObj
+        } else {
+          clueObj = acrossObj
+        }
+      } 
       var text = $(clueObj).text();
       var clueNumber = text.split(".")[0];
       var direction = clueObj.parentNode.getElementsByTagName("h2")[0].innerHTML;
