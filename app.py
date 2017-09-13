@@ -1,15 +1,15 @@
 import os
 import puz
 import parser
-import datetime as dt
 from cell import Cell
 from clue import Clue
 from flask import Flask, render_template, request, redirect, url_for
+import datetime
+
 app = Flask(__name__)
 
 cluesAcross = None
 cluesDown = None
-clues3D = None
 state = None
 check = None
 check_displayed = True
@@ -17,24 +17,16 @@ check_displayed = True
 @app.route("/new_puzzle", methods=["GET", "POST"])
 def new_puzzle():
   if request.method == "GET":
-    return render_template('new_puzzle.html')
+    today = datetime.date.today().strftime("%y.%m.%d")
+    return render_template('new_puzzle.html', today=today)
 
   elif request.method == "POST":
     date = request.form['date']
 
-    if (date == ""):
-      date = dt.datetime.today().strftime("%y.%m.%d")
-      print date
-
     global cluesAcross, cluesDown, state, check, check_displayed
     cluesAcross = parser.create_clues_across(date)
     cluesDown = parser.create_clues_down(date)
-
     state = parser.create_state(date)
-
-    clues3D = []
-    clues3D.append(state.hor_clues)
-    clues3D.append(state.ver_clues)
 
     check = None
     check_displayed = True
@@ -43,13 +35,13 @@ def new_puzzle():
 
 @app.route("/")
 def index():
-  global state, cluesAcross, cluesDown, check, check_displayed, clues3D
+  global state, cluesAcross, cluesDown, check, check_displayed
 
   # puzzle is not set up
   if not cluesAcross:
     return redirect(url_for("new_puzzle"))
 
-  return render_template('index.html', state=state, cluesAcross=cluesAcross, cluesDown=cluesDown, check=check, clues3D=clues3D)
+  return render_template('index.html', state=state, cluesAcross=cluesAcross, cluesDown=cluesDown, check=check)
 
 @app.route("/command/", methods=["POST"])
 def command():
