@@ -51,18 +51,18 @@ def join():
 def room(room_name):
   global rooms
 
-  if room_name not in rooms:
-    return redirect(url_for("join"))
-
-  # if puzzle is not set up
   # TODO(Jay): this is sort of jank right now. It will be fixed once we have persistence.
   # There exists 3 cases:
   # 1. The room has never been joined before. "room_name" is not in "rooms".
+  if room_name not in rooms:
+    return redirect(url_for("join"))
+
   # 2. The room has been joined, but there is no current puzzle. "room_name" is in "rooms", but the value of the key is True, not a Room.
-  # 3. The room has been joined and there is an ongoing puzzle.
+  # if puzzle is not set up
   if not isinstance(rooms[room_name], Room):
     return redirect(url_for("new_puzzle", room=room_name))
 
+  # 3. The room has been joined and there is an ongoing puzzle.
   return render_template("index.html", state=rooms[room_name].state, cluesAcross=rooms[room_name].clues["across"], cluesDown=rooms[room_name].clues["down"], check=rooms[room_name].check, room_name=room_name)
 
 @app.route("/command/", methods=["POST"])
