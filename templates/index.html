@@ -123,8 +123,10 @@
         y = Math.floor(($(clueObj).position().left - $(clueObj.parentNode).position().left) / 30)
         x_order = localStorage.getItem("h_" + x + "_" + y)
         y_order = localStorage.getItem("v_" + x + "_" + y)
-        acrossObj = document.getElementById('across').childNodes[2 * x_order + 5]
-        downObj   = document.getElementById('down').childNodes[2 * y_order + 3]
+        console.log(x_order)
+        console.log(y_order)
+        acrossObj = document.getElementById('across').getElementsByTagName("div")[x_order]
+        downObj   = document.getElementById('down').getElementsByTagName("div")[y_order]
         if ($("#clueText").val() == $(acrossObj).text().split(".")[0] + " " + acrossObj.parentNode.getElementsByTagName("h2")[0].innerHTML[0]) {
           clueObj = downObj
         } else {
