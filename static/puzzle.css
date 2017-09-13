@@ -36,6 +36,14 @@ div {
   position: absolute;
 }
 
+.indexed {
+  counter-increment: value;
+}
+
+.indexed:nth-of-type(n)::before {
+
+}
+
 .letter {
   text-align: center;
   font-size: 26px;
