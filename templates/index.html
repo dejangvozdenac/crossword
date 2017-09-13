@@ -67,7 +67,7 @@
       </div>
 
       <!-- form submission -->
-      <form action="{{ url_for('command', room=room) }}" id="command" method="post">
+      <form action="{{ url_for('command', room_name=room_name) }}" id="command" method="post">
         <div class="form-group">
           <b><label>Clue:</label></b>
           <input class="form-control" name="clue" id="clueText" placeholder="4 a"/>

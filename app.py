@@ -3,17 +3,13 @@ import puz
 import parser
 from cell import Cell
 from clue import Clue
+from room import Room
 from flask import Flask, render_template, request, redirect, url_for
 import datetime
 
 app = Flask(__name__)
 
 rooms = {}
-cluesAcross = None
-cluesDown = None
-state = None
-check = None
-check_displayed = True
 
 @app.route("/new_puzzle", methods=["GET", "POST"])
 def new_puzzle():
@@ -23,22 +19,21 @@ def new_puzzle():
 
   elif request.method == "POST":
     date = request.form['date']
-    room = request.form['room']
+    room_name = request.form['room']
 
-    global cluesAcross, cluesDown, state, check, check_displayed
-    cluesAcross = parser.create_clues_across(date)
-    cluesDown = parser.create_clues_down(date)
+    global rooms
+    across_clues = parser.create_clues_across(date)
+    down_clues = parser.create_clues_down(date)
     state = parser.create_state(date)
-
     check = None
-    check_displayed = True
+    rooms[room_name] = Room(across_clues, down_clues, state, check)
 
-    return redirect(room)
+    return redirect(room_name)
 
 @app.route("/")
 def index():
-  if request.args.get("room"):
-    return redirect(request.args["room"])
+  if request.args.get("room_name"):
+    return redirect(request.args["room_name"])
 
   return redirect(url_for("join"))
 
@@ -47,31 +42,43 @@ def join():
   if request.method == "GET":
     return render_template("join_room.html")
   elif request.method == "POST":
-    room = request.form['room']
-    rooms[room] = "placeholder" # TODO initialization
-    return redirect(room)
+    room_name = request.form['room_name']
+    if room_name not in rooms:
+      rooms[room_name] = True
+    return redirect(room_name)
 
 @app.route("/<room_name>/")
 def room(room_name):
-  global state, cluesAcross, cluesDown, check, check_displayed, rooms
+  global rooms
 
   if room_name not in rooms:
     return redirect(url_for("join"))
 
   # if puzzle is not set up
-  if not cluesAcross:
+  # TODO(Jay): this is sort of jank right now. It will be fixed once we have persistence.
+  # There exists 3 cases:
+  # 1. The room has never been joined before. "room_name" is not in "rooms".
+  # 2. The room has been joined, but there is no current puzzle. "room_name" is in "rooms", but the value of the key is True, not a Room.
+  # 3. The room has been joined and there is an ongoing puzzle.
+  if not isinstance(rooms[room_name], Room):
     return redirect(url_for("new_puzzle", room=room_name))
 
-  return render_template("index.html", state=state, cluesAcross=cluesAcross, cluesDown=cluesDown, check=check, room=room_name)
+  return render_template("index.html", state=rooms[room_name].state, cluesAcross=rooms[room_name].clues["across"], cluesDown=rooms[room_name].clues["down"], check=rooms[room_name].check, room_name=room_name)
 
 @app.route("/command/", methods=["POST"])
 def command():
-  room = request.args.get("room")
-  if not room:
+  global rooms
+
+  room_name = request.args.get("room_name")
+  if not room_name or room_name not in rooms:
     raise Exception("Jay fucked up!") # TODO(jay): remove this after testing
 
-  global state, check, check_displayed
+  # variables from the state of the room
+  state = rooms[room_name].state
+  clues_across = rooms[room_name].clues["across"]
+  clues_down = rooms[room_name].clues["down"]
   
+  # variables from the POST request
   clue = request.form['clue']
   position = request.form['position']
   solution = request.form['solution'].upper()
@@ -79,33 +86,33 @@ def command():
 
   if command_type == "Fill":
     if position:
-      state.submit_letter(clue, int(position), solution, cluesAcross, cluesDown)
+      state.submit_letter(clue, int(position), solution, clues_across, clues_down)
     else:
-      state.submit_word(clue, solution, cluesAcross, cluesDown)
+      state.submit_word(clue, solution, clues_across, clues_down)
   elif command_type == "Delete":
     if position:
-        state.delete_letter(clue, int(position), cluesAcross, cluesDown)
+        state.delete_letter(clue, int(position), clues_across, clues_down)
     else:
-      state.delete_word(clue, cluesAcross, cluesDown)
+      state.delete_word(clue, clues_across, clues_down)
   elif command_type == "Check":
-    check_displayed = False
+    rooms[room_name].check_displayed = False
     if state.check_solution():
-      check = True
+      rooms[room_name].check = True
     else:
-      check = False
+      rooms[room_name].check = False
   elif command_type == "Uncheck":
-    check_displayed = True
-    check = None
+    rooms[room_name].check_displayed = True
+    rooms[room_name].check = None
     state.uncheck_solution()
   elif command_type == "New Puzzle":
     return redirect(url_for("new_puzzle"))
   elif command_type == "Switch Room":
     return redirect(url_for("join"))
 
-  if check != None:
+  if rooms[room_name].check != None:
     state.check_solution()
 
-  return redirect(url_for("index", room=room))
+  return redirect(url_for("index", room_name=room_name))
 
 if __name__ == "__main__":
   port = int(os.environ.get('PORT', 5000))

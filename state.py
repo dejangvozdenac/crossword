@@ -89,7 +89,7 @@ class State:
 		elif self.array[row][col].variety != "BLACK":
 			old_letter = self.array[row][col].letter
 			self.array[row][col].letter = letter
-			print old_letter
+			# print old_letter
 			if (old_letter != ' ' and old_letter != None):
 				return
 
@@ -180,9 +180,9 @@ class State:
 				elif self.array[row][col].variety != "BLACK":
 					self.array[row][col].variety = "WHITE"
 
-		for row in range(len(self.array)):
-			for col in range(len(self.array)):
-					print self.array[row][col].variety
+		# for row in range(len(self.array)):
+			# for col in range(len(self.array)):
+					# print self.array[row][col].variety
 
 		return result
 
