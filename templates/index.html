@@ -119,8 +119,8 @@
       var clueObj = event.target;
 
       if ($(clueObj)["0"].className == "empty" || $(clueObj)["0"].className == "empty numbered" || $(clueObj)["0"].className == "letter") {
-        x = Math.floor(($(clueObj).position().top - $(clueObj.parentNode).position().top) / 30)
-        y = Math.floor(($(clueObj).position().left - $(clueObj.parentNode).position().left) / 30)
+        x = Math.floor(($(clueObj).position().top - $(clueObj.parentNode).position().top) + 1 / 30)
+        y = Math.floor(($(clueObj).position().left - $(clueObj.parentNode).position().left) + 1 / 30)
         x_order = localStorage.getItem("h_" + x + "_" + y)
         y_order = localStorage.getItem("v_" + x + "_" + y)
         console.log(x_order)
