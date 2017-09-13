@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block main %}
+  <center>
+    <h1>Join room</h1>
+    <!-- form submission -->
+    <!-- TODO -->
+    <form action="{{ url_for('join') }}" id="new_puzzle" method="post">
+      <div class="form-group">
+        <label>Room:</label>
+        <input class="form-control" name="room" value="jalapeno"/>
+      </div>
+
+      <div class="form-group">
+        <button class="button" type="submit">Submit</button>
+      </div>
+    </form>
+  </center>
+{% endblock %}
