@@ -4,6 +4,8 @@ import parser
 from cell import Cell
 from clue import Clue
 from flask import Flask, render_template, request, redirect, url_for
+import datetime
+
 app = Flask(__name__)
 
 cluesAcross = None
@@ -15,7 +17,8 @@ check_displayed = True
 @app.route("/new_puzzle", methods=["GET", "POST"])
 def new_puzzle():
   if request.method == "GET":
-    return render_template('new_puzzle.html')
+    today = datetime.date.today().strftime("%y.%m.%d")
+    return render_template('new_puzzle.html', today=today)
 
   elif request.method == "POST":
     date = request.form['date']
