@@ -1,13 +1,19 @@
 import os
+import datetime
+
 import puz
 import parser
+
 from cell import Cell
 from clue import Clue
 from room import Room
-from flask import Flask, render_template, request, redirect, url_for
-import datetime
+
+# from flask import Flask, render_template, request, redirect, url_for
+# from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+# app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+# db = SQLAlchemy(app)
 
 rooms = {}
 
