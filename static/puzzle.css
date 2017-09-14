@@ -18,6 +18,7 @@ div {
 }
 
 .empty {
+  position: relative;
   width: 28px;
   height: 28px;
   border: 1px solid black;
@@ -27,6 +28,7 @@ div {
 }
 
 .numbered {
+  position: relative;
   counter-increment: value;
 }
 
@@ -36,15 +38,20 @@ div {
   position: absolute;
 }
 
-.indexed {
-  counter-increment: value;
-}
-
-.indexed:nth-of-type(n)::before {
-
+.circle {
+  background-color:#fff;
+  border:1px solid black;    
+  height:25px;
+  border-radius:50%;
+  -moz-border-radius:50%;
+  -webkit-border-radius:50%;
+  width:25px;
+  position:absolute;
 }
 
 .letter {
+  position:absolute;
+  left: 5px;
   text-align: center;
   font-size: 26px;
   font-family: 'Helvetica Neue';

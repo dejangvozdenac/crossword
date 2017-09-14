@@ -3,6 +3,8 @@ import puz
 
 class State:
 	def __init__(self, puzzle):
+		circles = puzzle.markup().get_markup_squares()
+
 		self.array = [[None for i in range(puzzle.width)] for i in range(puzzle.height)]
 		self.height = puzzle.height
 		self.width = puzzle.width
@@ -13,31 +15,36 @@ class State:
 		ver_clues_count = 0
 
 		number = 1
+		current_index = 0
 		for row in range(puzzle.height):
 			for col in range(puzzle.width):
+				if (current_index in circles):
+					print current_index
 				value = puzzle.fill[row*puzzle.width + col]
 				if value == "." :
-					self.array[row][col] = Cell("BLACK", None, None, None)
+					self.array[row][col] = Cell("BLACK", None, None, None, False)
+					current_index += 1
 					continue
 
 				white = True
 				if (col == 0 or self.array[row][col - 1].variety == "BLACK"):
-					self.array[row][col] = Cell("WHITE", number, None, puzzle.solution[row*puzzle.width + col])
+					self.array[row][col] = Cell("WHITE", number, None, puzzle.solution[row*puzzle.width + col], True if current_index in circles else False)
 					number += 1
 					self.hor_clues[row][col] = hor_clues_count
 					hor_clues_count += 1
 					white = False
 				if (row == 0 or self.array[row - 1][col].variety == "BLACK") :
 					if (white) :
-						self.array[row][col] = Cell("WHITE", number, None, puzzle.solution[row*puzzle.width + col])
+						self.array[row][col] = Cell("WHITE", number, None, puzzle.solution[row*puzzle.width + col], True if current_index in circles else False)
 						number += 1
 					self.ver_clues[row][col] = ver_clues_count
 					ver_clues_count += 1
 					white = False
 
 				if (white) :
-					self.array[row][col] = Cell("WHITE", None, None, puzzle.solution[row*puzzle.width + col])
+					self.array[row][col] = Cell("WHITE", None, None, puzzle.solution[row*puzzle.width + col], True if current_index in circles else False)
 
+				current_index += 1
 
 		self.hor_clues_rem = [0 for i in range(hor_clues_count)]
 		self.ver_clues_rem = [0 for i in range(ver_clues_count)]
