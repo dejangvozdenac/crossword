@@ -14,12 +14,10 @@ class State:
 		hor_clues_count = 0
 		ver_clues_count = 0
 
-		number = 1
+		number = 1 # IRL indexes by 1
 		current_index = 0
 		for row in range(puzzle.height):
 			for col in range(puzzle.width):
-				if (current_index in circles):
-					print current_index
 				value = puzzle.fill[row*puzzle.width + col]
 				if value == "." :
 					self.grid[row][col] = Cell("BLACK", None, None, None, False)
@@ -96,7 +94,6 @@ class State:
 		elif self.grid[row][col].variety != "BLACK":
 			old_letter = self.grid[row][col].content
 			self.grid[row][col].content = letter
-			# print old_letter
 			if (old_letter != ' ' and old_letter != None):
 				return
 
