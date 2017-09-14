@@ -6,22 +6,19 @@
     <div id="across" class="col">
       <!-- questions -->
       <h2>Across</h2>
-      {% for clue in cluesAcross %}
-          {% if not clue.finished %}
-            <div>{{ clue.number ~ ". " ~ clue.question }}</div>
-          {% endif %}
+      {% for clue in unfinished_across_clues %}
+        <div>{{ clue.number ~ ". " ~ clue.question }}</div>
       {% endfor %}
-      {% for clue in cluesAcross %}
-          {% if clue.finished %}
-            <div style="text-decoration: line-through">{{ clue.number ~ ". " ~ clue.question }}</div>
-          {% endif %}
+
+      {% for clue in finished_across_clues %}
+        <div style="text-decoration: line-through">{{ clue.number ~ ". " ~ clue.question }}</div>
       {% endfor %}
     </div>
 
     <div id="across_hidden" hidden class="col">
       <!-- questions -->
       <h2>Across</h2>
-      {% for clue in cluesAcross %}
+      {% for clue in across_clues %}
           <div>{{ clue.number ~ ". " ~ clue.question }}</div>
       {% endfor %}
     </div>
@@ -135,22 +132,19 @@
     <div id="down" class="colright">
       <!-- questions -->
       <h2>Down</h2>
-      {% for clue in cluesDown %}
-        {% if not clue.finished %}
-          <div>{{ clue.number ~ ". " ~ clue.question }}</div>
-        {% endif %}
+      {% for clue in unfinished_down_clues %}
+        <div>{{ clue.number ~ ". " ~ clue.question }}</div>
       {% endfor %}
-      {% for clue in cluesDown %}
-        {% if clue.finished %}
-          <div style="text-decoration: line-through">{{ clue.number ~ ". " ~ clue.question }}</div>
-        {% endif %}
+
+      {% for clue in finished_down_clues %}
+        <div style="text-decoration: line-through">{{ clue.number ~ ". " ~ clue.question }}</div>
       {% endfor %}
     </div>
 
     <div id="down_hidden" hidden class="col">
       <!-- questions -->
       <h2>Down</h2>
-      {% for clue in cluesDown %}
+      {% for clue in down_clues %}
           <div>{{ clue.number ~ ". " ~ clue.question }}</div>
       {% endfor %}
     </div>

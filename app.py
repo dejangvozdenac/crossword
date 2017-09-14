@@ -69,7 +69,23 @@ def room(room_name):
     return redirect(url_for("new_puzzle", room=room_name))
 
   # 3. The room has been joined and there is an ongoing puzzle.
-  return render_template("index.html", state=rooms[room_name].state, cluesAcross=rooms[room_name].clues["across"], cluesDown=rooms[room_name].clues["down"], check=rooms[room_name].check, room_name=room_name)
+  across_clues = rooms[room_name].clues["across"]
+  finished_across_clues = list(filter(lambda clue: clue.finished, across_clues))
+  unfinished_across_clues = list(filter(lambda clue: not clue.finished, across_clues))
+  
+  down_clues = rooms[room_name].clues["down"]
+  finished_down_clues = list(filter(lambda clue: clue.finished, down_clues))
+  unfinished_down_clues = list(filter(lambda clue: not clue.finished, down_clues))
+
+  return render_template("index.html",
+                         state=rooms[room_name].state,
+                         across_clues=across_clues,
+                         finished_across_clues=finished_across_clues,
+                         unfinished_across_clues=unfinished_across_clues,
+                         down_clues=down_clues,
+                         finished_down_clues=finished_down_clues,
+                         unfinished_down_clues=unfinished_down_clues,
+                         room_name=room_name)
 
 @app.route("/command/", methods=["POST"])
 def command():
