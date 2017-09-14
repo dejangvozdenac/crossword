@@ -35,7 +35,7 @@
               <div class="filled"></div>
             {% elif cell.numbered %}
               {% if cell.variety == "WHITE_INCORRECT" %}
-                {% if cell.circle == True %}
+                {% if cell.circled %}
                   <div class="empty incorrect">
                     <div class = "circle"></div>
                     <div class = "numbered"></div>
@@ -51,7 +51,7 @@
                   </div>
                 {% endif %}
               {% else %}
-                {% if cell.circle == True %}
+                {% if cell.circled %}
                   <div class="empty">
                     <div class = "circle"></div>
                     <div class = "numbered"></div>
@@ -69,7 +69,7 @@
               {% endif %}
             {% else %}
               {% if cell.variety == "WHITE_INCORRECT" %}
-                {% if cell.circle == True %}
+                {% if cell.circled %}
                   <div class="empty incorrect">
                     <div class = "circle"></div>
                     {% if cell.content %}
@@ -84,7 +84,7 @@
                   </div>
                 {% endif %}
               {% else %}
-                {% if cell.circle == True %}
+                {% if cell.circled %}
                   <div class="empty">
                     <div class = "circle"></div>
                     {% if cell.content %}
