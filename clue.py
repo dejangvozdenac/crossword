@@ -1,7 +1,7 @@
 class Clue:
-  def __init__(self, number, across, clue, answer, finished):
+  def __init__(self, number, across, question, answer, finished):
     self.number = number
     self.across = across
-    self.clue = clue
+    self.question = question
     self.answer = answer
     self.finished = finished

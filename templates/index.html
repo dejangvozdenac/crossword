@@ -4,25 +4,25 @@
   <center><h1>Crossword Puzzle</h1></center>
   <div id="wrap">
     <div id="across" class="col">
-      <!-- clues -->
+      <!-- questions -->
       <h2>Across</h2>
       {% for clue in cluesAcross %}
           {% if not clue.finished %}
-            <div>{{ clue.number ~ ". " ~ clue.clue }}</div>
+            <div>{{ clue.number ~ ". " ~ clue.question }}</div>
           {% endif %}
       {% endfor %}
       {% for clue in cluesAcross %}
           {% if clue.finished %}
-            <div style="text-decoration: line-through">{{ clue.number ~ ". " ~ clue.clue }}</div>
+            <div style="text-decoration: line-through">{{ clue.number ~ ". " ~ clue.question }}</div>
           {% endif %}
       {% endfor %}
     </div>
 
     <div id="across_hidden" hidden class="col">
-      <!-- clues -->
+      <!-- questions -->
       <h2>Across</h2>
       {% for clue in cluesAcross %}
-          <div>{{ clue.number ~ ". " ~ clue.clue }}</div>
+          <div>{{ clue.number ~ ". " ~ clue.question }}</div>
       {% endfor %}
     </div>
 
@@ -133,24 +133,25 @@
     </div>
 
     <div id="down" class="colright">
+      <!-- questions -->
       <h2>Down</h2>
       {% for clue in cluesDown %}
         {% if not clue.finished %}
-          <div>{{ clue.number ~ ". " ~ clue.clue }}</div>
+          <div>{{ clue.number ~ ". " ~ clue.question }}</div>
         {% endif %}
       {% endfor %}
       {% for clue in cluesDown %}
         {% if clue.finished %}
-          <div style="text-decoration: line-through">{{ clue.number ~ ". " ~ clue.clue }}</div>
+          <div style="text-decoration: line-through">{{ clue.number ~ ". " ~ clue.question }}</div>
         {% endif %}
       {% endfor %}
     </div>
 
     <div id="down_hidden" hidden class="col">
-      <!-- clues -->
+      <!-- questions -->
       <h2>Down</h2>
       {% for clue in cluesDown %}
-          <div>{{ clue.number ~ ". " ~ clue.clue }}</div>
+          <div>{{ clue.number ~ ". " ~ clue.question }}</div>
       {% endfor %}
     </div>
 

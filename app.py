@@ -8,7 +8,7 @@ from cell import Cell
 from clue import Clue
 from room import Room
 
-# from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for
 # from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
