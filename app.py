@@ -21,11 +21,11 @@ rooms = {}
 def new_puzzle():
   if request.method == "GET":
     today = datetime.date.today().strftime("%y.%m.%d")
-    return render_template('new_puzzle.html', today=today, room=request.args["room"])
+    return render_template('new_puzzle.html', today=today, room_name=request.args["room_name"])
 
   elif request.method == "POST":
-    date = request.form['date']
-    room_name = request.form['room']
+    date = request.form["date"]
+    room_name = request.form["room_name"]
 
     global rooms
     across_clues = parser.create_clues_across(date)
@@ -66,7 +66,7 @@ def room(room_name):
   # 2. The room has been joined, but there is no current puzzle. "room_name" is in "rooms", but the value of the key is True, not a Room.
   # if puzzle is not set up
   if not isinstance(rooms[room_name], Room):
-    return redirect(url_for("new_puzzle", room=room_name))
+    return redirect(url_for("new_puzzle", room_name=room_name))
 
   # 3. The room has been joined and there is an ongoing puzzle.
   across_clues = rooms[room_name].clues["across"]
@@ -127,7 +127,7 @@ def command():
     rooms[room_name].check = None
     state.uncheck_solution()
   elif command_type == "New Puzzle":
-    return redirect(url_for("new_puzzle"))
+    return redirect(url_for("new_puzzle", room_name=room_name))
   elif command_type == "Switch Room":
     return redirect(url_for("join"))
 
