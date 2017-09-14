@@ -2,6 +2,6 @@ class Clue:
   def __init__(self, number, across, question, answer, finished):
     self.number = number
     self.across = across
-    self.question = question
-    self.answer = answer
+    self.question = question # string
+    self.answer = answer # string
     self.finished = finished

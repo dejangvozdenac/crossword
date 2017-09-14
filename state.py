@@ -5,7 +5,7 @@ class State:
 	def __init__(self, puzzle):
 		circles = puzzle.markup().get_markup_squares()
 
-		self.array = [[None for i in range(puzzle.width)] for i in range(puzzle.height)]
+		self.grid = [[None for i in range(puzzle.width)] for i in range(puzzle.height)]
 		self.height = puzzle.height
 		self.width = puzzle.width
 
@@ -22,27 +22,27 @@ class State:
 					print current_index
 				value = puzzle.fill[row*puzzle.width + col]
 				if value == "." :
-					self.array[row][col] = Cell("BLACK", None, None, None, False)
+					self.grid[row][col] = Cell("BLACK", None, None, None, False)
 					current_index += 1
 					continue
 
 				white = True
-				if (col == 0 or self.array[row][col - 1].variety == "BLACK"):
-					self.array[row][col] = Cell("WHITE", number, None, puzzle.solution[row*puzzle.width + col], True if current_index in circles else False)
+				if (col == 0 or self.grid[row][col - 1].variety == "BLACK"):
+					self.grid[row][col] = Cell("WHITE", number, None, puzzle.solution[row*puzzle.width + col], True if current_index in circles else False)
 					number += 1
 					self.hor_clues[row][col] = hor_clues_count
 					hor_clues_count += 1
 					white = False
-				if (row == 0 or self.array[row - 1][col].variety == "BLACK") :
+				if (row == 0 or self.grid[row - 1][col].variety == "BLACK") :
 					if (white) :
-						self.array[row][col] = Cell("WHITE", number, None, puzzle.solution[row*puzzle.width + col], True if current_index in circles else False)
+						self.grid[row][col] = Cell("WHITE", number, None, puzzle.solution[row*puzzle.width + col], True if current_index in circles else False)
 						number += 1
 					self.ver_clues[row][col] = ver_clues_count
 					ver_clues_count += 1
 					white = False
 
 				if (white) :
-					self.array[row][col] = Cell("WHITE", None, None, puzzle.solution[row*puzzle.width + col], True if current_index in circles else False)
+					self.grid[row][col] = Cell("WHITE", None, None, puzzle.solution[row*puzzle.width + col], True if current_index in circles else False)
 
 				current_index += 1
 
@@ -55,9 +55,9 @@ class State:
 				value = puzzle.fill[row*puzzle.width + col]
 				if value == "." :
 					continue
-				if (col != 0 and self.array[row][col - 1].variety != "BLACK") :
+				if (col != 0 and self.grid[row][col - 1].variety != "BLACK") :
 					self.hor_clues[row][col] = self.hor_clues[row][col - 1]
-				if (row != 0 and self.array[row - 1][col].variety != "BLACK") :
+				if (row != 0 and self.grid[row - 1][col].variety != "BLACK") :
 					self.ver_clues[row][col] = self.ver_clues[row - 1][col]
 				
 				self.hor_clues_rem[self.hor_clues[row][col]] += 1
@@ -69,10 +69,10 @@ class State:
 	def parse_number(self, number, is_across):
 		for row in range(self.height):
 			for col in range(self.width):
-				if self.array[row][col].numbered == number:
-					if is_across and (col == 0 or self.array[row][col-1].variety == "BLACK"):
+				if self.grid[row][col].numbered == number:
+					if is_across and (col == 0 or self.grid[row][col-1].variety == "BLACK"):
 						return row, col
-					elif not is_across and (row == 0 or self.array[row-1][col].variety == "BLACK"):
+					elif not is_across and (row == 0 or self.grid[row-1][col].variety == "BLACK"):
 						return row, col
 					else:
 						return None, None
@@ -93,9 +93,9 @@ class State:
 	def submit_letter_exact(self, row, col, letter, cluesAcross, cluesDown):
 		if (letter == ' '):
 			self.delete_letter_exact(row, col, cluesAcross, cluesDown)
-		elif self.array[row][col].variety != "BLACK":
-			old_letter = self.array[row][col].content
-			self.array[row][col].content = letter
+		elif self.grid[row][col].variety != "BLACK":
+			old_letter = self.grid[row][col].content
+			self.grid[row][col].content = letter
 			# print old_letter
 			if (old_letter != ' ' and old_letter != None):
 				return
@@ -113,9 +113,9 @@ class State:
 
 
 	def delete_letter_exact(self, row, col, cluesAcross, cluesDown):
-		if self.array[row][col].variety != "BLACK":
-			old_letter = self.array[row][col]
-			self.array[row][col].content = None
+		if self.grid[row][col].variety != "BLACK":
+			old_letter = self.grid[row][col]
+			self.grid[row][col].content = None
 			if (old_letter == ' ' or old_letter == None):
 				return
 
@@ -170,7 +170,7 @@ class State:
 		if row is None:
 			return
 
-		while (row < len(self.array) and col < len(self.array) and self.array[row][col].variety != "BLACK"):
+		while (row < self.height and col < self.width) and self.grid[row][col].variety != "BLACK"):
 			self.delete_letter_exact(row, col, cluesAcross, cluesDown)
 			if is_across:
 				col += 1
@@ -179,25 +179,21 @@ class State:
 
 	def check_solution(self):
 		result = True
-		for row in range(len(self.array)):
-			for col in range(len(self.array)):
-				if self.array[row][col].content != self.array[row][col].answer:
-					self.array[row][col].variety = "WHITE_INCORRECT"
+		for row in range(self.height)):
+			for col in range(self.width):
+				if self.grid[row][col].content != self.grid[row][col].answer:
+					self.grid[row][col].variety = "WHITE_INCORRECT"
 					result = False
-				elif self.array[row][col].variety != "BLACK":
-					self.array[row][col].variety = "WHITE"
-
-		# for row in range(len(self.array)):
-			# for col in range(len(self.array)):
-					# print self.array[row][col].variety
+				elif self.grid[row][col].variety != "BLACK":
+					self.grid[row][col].variety = "WHITE"
 
 		return result
 
 	def uncheck_solution(self):
-		for row in range(len(self.array)):
-			for col in range(len(self.array)):
-				if self.array[row][col].variety == "WHITE_INCORRECT":
-					self.array[row][col].variety = "WHITE"
+		for row in range(self.height):
+			for col in range(self.width):
+				if self.grid[row][col].variety == "WHITE_INCORRECT":
+					self.grid[row][col].variety = "WHITE"
 
 	def get_ver_clue(self, x, y):
 		return self.ver_clues[x][y]

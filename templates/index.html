@@ -24,7 +24,7 @@
     
     {% for row in range(0, state.width) %}
       {% for col in range(0, state.height) %}
-        {% if state.array[row][col].variety != "BLACK" %}
+        {% if state.grid[row][col].variety != "BLACK" %}
           localStorage.setItem("v_" + {{ row }} + "_" + {{ col }} , {{ state.ver_clues[row][col] }} );
           localStorage.setItem("h_" + {{ row }} + "_" + {{ col }} , {{ state.hor_clues[row][col] }} );
         {% endif %}
