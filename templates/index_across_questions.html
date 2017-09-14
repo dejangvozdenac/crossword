@@ -1,0 +1,17 @@
+<div id="across" class="col">
+  <h2>Across</h2>
+  {% for clue in unfinished_across_clues %}
+    <div>{{ clue.number ~ ". " ~ clue.question }}</div>
+  {% endfor %}
+
+  {% for clue in finished_across_clues %}
+    <div style="text-decoration: line-through">{{ clue.number ~ ". " ~ clue.question }}</div>
+  {% endfor %}
+</div>
+
+<div id="across_hidden" hidden class="col">
+  <h2>Across</h2>
+  {% for clue in across_clues %}
+      <div>{{ clue.number ~ ". " ~ clue.question }}</div>
+  {% endfor %}
+</div>

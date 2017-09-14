@@ -1,0 +1,75 @@
+<div id="wrapper">
+{% for row in state.array %}
+  {% for cell in row %}
+    {% if cell.variety == "BLACK" %}
+      <div class="filled"></div>
+    {% elif cell.numbered %}
+      {% if cell.variety == "WHITE_INCORRECT" %}
+        {% if cell.circled %}
+          <div class="empty incorrect">
+            <div class = "circle"></div>
+            <div class = "numbered"></div>
+            {% if cell.content %}
+              <div class="letter">{{ cell.content }}</div>
+            {% endif %}
+          </div>
+        {% else %}
+          <div class="empty numbered incorrect">
+            {% if cell.content %}
+              <div class="letter">{{ cell.content }}</div>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% else %}
+        {% if cell.circled %}
+          <div class="empty">
+            <div class = "circle"></div>
+            <div class = "numbered"></div>
+            {% if cell.content %}
+              <div class="letter">{{ cell.content }}</div>
+            {% endif %}
+          </div>
+          {% else %}
+            <div class="empty numbered">
+              {% if cell.content %}
+                <div class="letter">{{ cell.content }}</div>
+              {% endif %}
+            </div>
+          {% endif %}
+      {% endif %}
+    {% else %}
+      {% if cell.variety == "WHITE_INCORRECT" %}
+        {% if cell.circled %}
+          <div class="empty incorrect">
+            <div class = "circle"></div>
+            {% if cell.content %}
+              <div class="letter">{{ cell.content }}</div>
+            {% endif %}
+          </div>
+        {% else %}
+          <div class="empty incorrect">
+            {% if cell.content %}
+              <div class="letter">{{ cell.content }}</div>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% else %}
+        {% if cell.circled %}
+          <div class="empty">
+            <div class = "circle"></div>
+            {% if cell.content %}
+              <div class="letter">{{ cell.content }}</div>
+            {% endif %}
+          </div>
+        {% else %}
+          <div class="empty">
+            {% if cell.content %}
+              <div class="letter">{{ cell.content }}</div>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+{% endfor %}
+</div>

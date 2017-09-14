@@ -1,0 +1,26 @@
+<!-- form submission -->
+<form action="{{ url_for('command', room_name=room_name) }}" id="command" method="post">
+  <div class="form-group">
+    <b><label>Clue:</label></b>
+    <input class="form-control" name="clue" id="clueText" placeholder="4 a"/>
+  </div>
+
+  <div class="form-group">
+    <b><label>Letter position (optional):</label></b>
+    <input class="form-control" name="position" placeholder="3"/>
+  </div>
+
+  <div class="form-group">
+    <b><label>Solution:</label></b>
+    <input class="form-control" name="solution" id="solutionText" placeholder="aria"/>
+  </div>
+
+  <div class="form-group">
+    <input type="submit" name="command_type" value="Fill"></button>
+    <input type="submit" name="command_type" value="Delete"></button>
+    <input type="submit" name="command_type" value="Check"></button>
+    <input type="submit" name="command_type" value="Uncheck"></button>
+    <input type="submit" name="command_type" value="New Puzzle"></button>
+    <input type="submit" name="command_type" value="Switch Room"></button>
+  </div>
+</form>

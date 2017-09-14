@@ -1,0 +1,19 @@
+<div id="down" class="colright">
+  <!-- questions -->
+  <h2>Down</h2>
+  {% for clue in unfinished_down_clues %}
+    <div>{{ clue.number ~ ". " ~ clue.question }}</div>
+  {% endfor %}
+
+  {% for clue in finished_down_clues %}
+    <div style="text-decoration: line-through">{{ clue.number ~ ". " ~ clue.question }}</div>
+  {% endfor %}
+</div>
+
+<div id="down_hidden" hidden class="col">
+  <!-- questions -->
+  <h2>Down</h2>
+  {% for clue in down_clues %}
+      <div>{{ clue.number ~ ". " ~ clue.question }}</div>
+  {% endfor %}
+</div>
