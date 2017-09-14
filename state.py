@@ -94,8 +94,8 @@ class State:
 		if (letter == ' '):
 			self.delete_letter_exact(row, col, cluesAcross, cluesDown)
 		elif self.array[row][col].variety != "BLACK":
-			old_letter = self.array[row][col].letter
-			self.array[row][col].letter = letter
+			old_letter = self.array[row][col].content
+			self.array[row][col].content = letter
 			# print old_letter
 			if (old_letter != ' ' and old_letter != None):
 				return
@@ -115,7 +115,7 @@ class State:
 	def delete_letter_exact(self, row, col, cluesAcross, cluesDown):
 		if self.array[row][col].variety != "BLACK":
 			old_letter = self.array[row][col]
-			self.array[row][col].letter = None
+			self.array[row][col].content = None
 			if (old_letter == ' ' or old_letter == None):
 				return
 
@@ -181,7 +181,7 @@ class State:
 		result = True
 		for row in range(len(self.array)):
 			for col in range(len(self.array)):
-				if self.array[row][col].letter != self.array[row][col].answer:
+				if self.array[row][col].content != self.array[row][col].answer:
 					self.array[row][col].variety = "WHITE_INCORRECT"
 					result = False
 				elif self.array[row][col].variety != "BLACK":

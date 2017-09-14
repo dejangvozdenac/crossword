@@ -1,7 +1,7 @@
 class Cell:
-  def __init__(self, variety, numbered, letter, answer, circle):
+  def __init__(self, variety, numbered, content, answer, circle):
     self.variety = variety
     self.numbered = numbered
-    self.letter = letter
+    self.content = content
     self.answer = answer
     self.circle = circle

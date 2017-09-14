@@ -39,14 +39,14 @@
                   <div class="empty incorrect">
                     <div class = "circle"></div>
                     <div class = "numbered"></div>
-                    {% if cell.letter %}
-                      <div class="letter">{{ cell.letter }}</div>
+                    {% if cell.content %}
+                      <div class="letter">{{ cell.content }}</div>
                     {% endif %}
                   </div>
                 {% else %}
                   <div class="empty numbered incorrect">
-                    {% if cell.letter %}
-                      <div class="letter">{{ cell.letter }}</div>
+                    {% if cell.content %}
+                      <div class="letter">{{ cell.content }}</div>
                     {% endif %}
                   </div>
                 {% endif %}
@@ -55,14 +55,14 @@
                   <div class="empty">
                     <div class = "circle"></div>
                     <div class = "numbered"></div>
-                    {% if cell.letter %}
-                      <div class="letter">{{ cell.letter }}</div>
+                    {% if cell.content %}
+                      <div class="letter">{{ cell.content }}</div>
                     {% endif %}
                   </div>
                   {% else %}
                     <div class="empty numbered">
-                      {% if cell.letter %}
-                        <div class="letter">{{ cell.letter }}</div>
+                      {% if cell.content %}
+                        <div class="letter">{{ cell.content }}</div>
                       {% endif %}
                     </div>
                   {% endif %}
@@ -72,14 +72,14 @@
                 {% if cell.circle == True %}
                   <div class="empty incorrect">
                     <div class = "circle"></div>
-                    {% if cell.letter %}
-                      <div class="letter">{{ cell.letter }}</div>
+                    {% if cell.content %}
+                      <div class="letter">{{ cell.content }}</div>
                     {% endif %}
                   </div>
                 {% else %}
                   <div class="empty incorrect">
-                    {% if cell.letter %}
-                      <div class="letter">{{ cell.letter }}</div>
+                    {% if cell.content %}
+                      <div class="letter">{{ cell.content }}</div>
                     {% endif %}
                   </div>
                 {% endif %}
@@ -87,14 +87,14 @@
                 {% if cell.circle == True %}
                   <div class="empty">
                     <div class = "circle"></div>
-                    {% if cell.letter %}
-                      <div class="letter">{{ cell.letter }}</div>
+                    {% if cell.content %}
+                      <div class="letter">{{ cell.content }}</div>
                     {% endif %}
                   </div>
                 {% else %}
                   <div class="empty">
-                    {% if cell.letter %}
-                      <div class="letter">{{ cell.letter }}</div>
+                    {% if cell.content %}
+                      <div class="letter">{{ cell.content }}</div>
                     {% endif %}
                   </div>
                 {% endif %}
