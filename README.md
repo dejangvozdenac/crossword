@@ -2,11 +2,11 @@
 
 ## Future features:
 1) highlight currently selected clue on the grid
-2) click on a square to mark it as a guess and to display it as a different color
+2) ~~click on a square to mark it as a guess and to display it as a different color~~ (hold shift then click)
 3) persistence (TODO by Jay, since it is closely related to rooms)
 4) ~~rooms~~ (done)
 5) rebus
-6) circles
+6) ~~circles~~ (automatic)
 
 ## Notes
 Without persistence, clues, checked, etc (variables which have to do with the state of a room) has been factored to a Room class. Now, the app holds a map of room names to Rooms in memory.

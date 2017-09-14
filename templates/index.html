@@ -173,12 +173,24 @@
       var clueObj = event.target;
 
       if ($(clueObj)["0"].className == "empty" || $(clueObj)["0"].className == "empty numbered" || $(clueObj)["0"].className == "letter" || $(clueObj)["0"].className == "circle") {
+        
+        if (event.shiftKey) {
+          if ($(clueObj)["0"].className == "letter"){
+            clueObj = clueObj.parentNode;
+          }
+          console.log($(clueObj).css("background") == "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box");
+          if ($(clueObj).css("background") == "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box") {
+            $(clueObj).css("background", "LightGray");
+          } else {
+            $(clueObj).css("background", "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box");
+          }
+          return;
+        }
+
         y = Math.floor((event.pageX - document.getElementById('wrapper').getBoundingClientRect().left + 1) / 30)
         x = Math.floor((event.pageY - document.getElementById('wrapper').getBoundingClientRect().top + 1) / 30)
         x_order = localStorage.getItem("h_" + x + "_" + y)
         y_order = localStorage.getItem("v_" + x + "_" + y)
-        console.log(x_order)
-        console.log(y_order)
         acrossObj = document.getElementById('across_hidden').getElementsByTagName("div")[x_order]
         downObj   = document.getElementById('down_hidden').getElementsByTagName("div")[y_order]
         if ($("#clueText").val() == $(acrossObj).text().split(".")[0] + " " + acrossObj.parentNode.getElementsByTagName("h2")[0].innerHTML[0]) {
