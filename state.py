@@ -31,28 +31,21 @@ class State:
 				cell_starts_across_clue = self._cell_starts_across_clue(row, col)
 				cell_starts_down_clue = self._cell_starts_down_clue(row, col)
 
-				white = True
-				if (col == 0 or self.grid[row][col - 1].variety == "BLACK"):
+				if cell_starts_across_clue or cell_starts_down_clue:
 					self.grid[row][col] = Cell(variety="WHITE",
 																		 number=number,
 																		 answer=puzzle.solution[flat_array_idx],
 																		 circled=circled)
 					number += 1
-					self.hor_clues[row][col] = hor_clues_count
-					hor_clues_count += 1
-					white = False
-				if (row == 0 or self.grid[row - 1][col].variety == "BLACK") :
-					if (white) :
-						self.grid[row][col] = Cell(variety="WHITE",
-																			 number=number,
-																			 answer=puzzle.solution[flat_array_idx],
-																			 circled=circled)
-						number += 1
-					self.ver_clues[row][col] = ver_clues_count
-					ver_clues_count += 1
-					white = False
+					
+					if cell_starts_across_clue:
+						self.hor_clues[row][col] = hor_clues_count
+						hor_clues_count += 1
+					if cell_starts_down_clue:
+						self.ver_clues[row][col] = ver_clues_count
+						ver_clues_count += 1
 
-				if (white) :
+				else:
 					self.grid[row][col] = Cell(variety="WHITE",
 																		 answer=puzzle.solution[flat_array_idx],
 																		 circled=circled)
@@ -67,9 +60,9 @@ class State:
 				if color == Cell.BLACK:
 					continue
 
-				if (col != 0 and self.grid[row][col - 1].variety != "BLACK") :
+				if self._cell_starts_across_clue(row, col):
 					self.hor_clues[row][col] = self.hor_clues[row][col - 1]
-				if (row != 0 and self.grid[row - 1][col].variety != "BLACK") :
+				if self._cell_starts_down_clue(row, col):
 					self.ver_clues[row][col] = self.ver_clues[row - 1][col]
 				
 				self.hor_clues_rem[self.hor_clues[row][col]] += 1
@@ -80,11 +73,11 @@ class State:
 
 	# private helper method
 	def _cell_starts_across_clue(self, row, col):
-		return col == 0 or self.grid[row][col - 1].variety == "BLACK"
+		return (col == 0 or self.grid[row][col - 1].variety == "BLACK")
 
 	# private helper method
 	def _cell_starts_down_clue(self, row, col):
-		return row == 0 or self.grid[row - 1][col].variety == "BLACK"
+		return (row == 0 or self.grid[row - 1][col].variety == "BLACK")
 
 	def parse_number(self, number, is_across):
 		for row in range(self.height):
