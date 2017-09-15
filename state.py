@@ -67,7 +67,7 @@ class State:
 	def parse_number(self, number, is_across):
 		for row in range(self.height):
 			for col in range(self.width):
-				if self.grid[row][col].numbered == number:
+				if self.grid[row][col].number == number:
 					if is_across and (col == 0 or self.grid[row][col-1].variety == "BLACK"):
 						return row, col
 					elif not is_across and (row == 0 or self.grid[row-1][col].variety == "BLACK"):
@@ -167,7 +167,7 @@ class State:
 		if row is None:
 			return
 
-		while (row < self.height and col < self.width) and self.grid[row][col].variety != "BLACK"):
+		while row < self.height and col < self.width and self.grid[row][col].variety != "BLACK":
 			self.delete_letter_exact(row, col, cluesAcross, cluesDown)
 			if is_across:
 				col += 1
@@ -176,7 +176,7 @@ class State:
 
 	def check_solution(self):
 		result = True
-		for row in range(self.height)):
+		for row in range(self.height):
 			for col in range(self.width):
 				if self.grid[row][col].content != self.grid[row][col].answer:
 					self.grid[row][col].variety = "WHITE_INCORRECT"
