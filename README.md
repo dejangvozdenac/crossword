@@ -1,14 +1,22 @@
 # Crossword
 
 ## Future features:
-1) highlight currently selected clue on the grid
-2) ~~click on a square to mark it as a guess and to display it as a different color~~ (hold shift then click)
-3) persistence (TODO by Jay, since it is closely related to rooms)
-4) ~~rooms~~
-5) rebus
-6) ~~circles~~ (automatic)
-7) refactor index.html
-8) redesign data structures
+#### TODO
+1) refactor index.html
+2) redesign data structures
+3) when you highlight a clue it comes up in the special clue box at the top so you don't have to look for it
+4) highlight currently selected clue on the grid
+5) tabbing over to select next clue
+6) rebus
+
+
+#### In Progress
+1) click on a square to mark it as a guess and to display it as a different color (hold shift then click) -- works but does not send it back to the server
+2) persistence (TODO by Jay, since it is closely related to rooms)
+
+#### Done
+1) ~~circles~~ (automatic)
+2) ~~rooms~~
 
 ## Notes:
 Without persistence, clues, checked, etc (variables which have to do with the state of a room) has been factored to a Room class. Now, the app holds a map of room names to Rooms in memory.
