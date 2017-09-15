@@ -25,8 +25,11 @@ class State:
 					continue
 
 				circled = False
-				if current_index in circle_idxs:
+				if flat_array_idx in circle_idxs:
 					circled = True
+
+				cell_starts_across_clue = self._cell_starts_across_clue(row, col)
+				cell_starts_down_clue = self._cell_starts_down_clue(row, col)
 
 				white = True
 				if (col == 0 or self.grid[row][col - 1].variety == "BLACK"):
@@ -74,6 +77,14 @@ class State:
 
 				self.hor_clues_capacity[self.hor_clues[row][col]] += 1
 				self.ver_clues_capacity[self.ver_clues[row][col]] += 1
+
+	# private helper method
+	def _cell_starts_across_clue(self, row, col):
+		return col == 0 or self.grid[row][col - 1].variety == "BLACK"
+
+	# private helper method
+	def _cell_starts_down_clue(self, row, col):
+		return row == 0 or self.grid[row - 1][col].variety == "BLACK"
 
 	def parse_number(self, number, is_across):
 		for row in range(self.height):
