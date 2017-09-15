@@ -3,14 +3,14 @@ import puz
 
 class State:
 	def __init__(self, puzzle):
-		circles = puzzle.markup().get_markup_squares()
+		circle_idxs = puzzle.markup().get_markup_squares()
 
-		self.grid = [[None for i in range(puzzle.width)] for i in range(puzzle.height)]
+		self.grid = [[None for i in range(puzzle.width)] for j in range(puzzle.height)]
 		self.height = puzzle.height
 		self.width = puzzle.width
 
-		self.hor_clues = [[None for i in range(puzzle.width)] for i in range(puzzle.height)]
-		self.ver_clues = [[None for i in range(puzzle.width)] for i in range(puzzle.height)]
+		self.hor_clues = [[None for i in range(puzzle.width)] for j in range(puzzle.height)]
+		self.ver_clues = [[None for i in range(puzzle.width)] for j in range(puzzle.height)]
 		hor_clues_count = 0
 		ver_clues_count = 0
 
@@ -18,29 +18,42 @@ class State:
 		current_index = 0
 		for row in range(puzzle.height):
 			for col in range(puzzle.width):
-				value = puzzle.fill[row*puzzle.width + col]
-				if value == "." :
-					self.grid[row][col] = Cell("BLACK", None, None, None, False)
+				# flat_array_idx = row * puzzle.width + col
+				color = puzzle.fill[row*puzzle.width + col]
+				if color == Cell.BLACK:
+					self.grid[row][col] = Cell(variety="BLACK")
 					current_index += 1
 					continue
 
+				circled = False
+				if current_index in circle_idxs:
+					circled = True
+
 				white = True
 				if (col == 0 or self.grid[row][col - 1].variety == "BLACK"):
-					self.grid[row][col] = Cell("WHITE", number, None, puzzle.solution[row*puzzle.width + col], True if current_index in circles else False)
+					self.grid[row][col] = Cell(variety="WHITE",
+																		 number=number,
+																		 answer=puzzle.solution[row*puzzle.width + col],
+																		 circled=circled)
 					number += 1
 					self.hor_clues[row][col] = hor_clues_count
 					hor_clues_count += 1
 					white = False
 				if (row == 0 or self.grid[row - 1][col].variety == "BLACK") :
 					if (white) :
-						self.grid[row][col] = Cell("WHITE", number, None, puzzle.solution[row*puzzle.width + col], True if current_index in circles else False)
+						self.grid[row][col] = Cell(variety="WHITE",
+																			 number=number,
+																			 answer=puzzle.solution[row*puzzle.width + col],
+																			 circled=circled)
 						number += 1
 					self.ver_clues[row][col] = ver_clues_count
 					ver_clues_count += 1
 					white = False
 
 				if (white) :
-					self.grid[row][col] = Cell("WHITE", None, None, puzzle.solution[row*puzzle.width + col], True if current_index in circles else False)
+					self.grid[row][col] = Cell(variety="WHITE",
+																		 answer=puzzle.solution[row*puzzle.width + col],
+																		 circled=circled)
 
 				current_index += 1
 
@@ -50,8 +63,8 @@ class State:
 		self.ver_clues_capacity = [0 for i in range(ver_clues_count)]
 		for row in range(puzzle.height):
 			for col in range(puzzle.width):
-				value = puzzle.fill[row*puzzle.width + col]
-				if value == "." :
+				color = puzzle.fill[row*puzzle.width + col]
+				if color == Cell.BLACK:
 					continue
 				if (col != 0 and self.grid[row][col - 1].variety != "BLACK") :
 					self.hor_clues[row][col] = self.hor_clues[row][col - 1]
