@@ -15,14 +15,13 @@ class State:
 		ver_clues_count = 0
 
 		number = 1 # IRL indexes by 1
-		current_index = 0
 		for row in range(puzzle.height):
 			for col in range(puzzle.width):
-				# flat_array_idx = row * puzzle.width + col
-				color = puzzle.fill[row*puzzle.width + col]
+				flat_array_idx = row * puzzle.width + col
+
+				color = puzzle.fill[flat_array_idx]
 				if color == Cell.BLACK:
 					self.grid[row][col] = Cell(variety="BLACK")
-					current_index += 1
 					continue
 
 				circled = False
@@ -33,7 +32,7 @@ class State:
 				if (col == 0 or self.grid[row][col - 1].variety == "BLACK"):
 					self.grid[row][col] = Cell(variety="WHITE",
 																		 number=number,
-																		 answer=puzzle.solution[row*puzzle.width + col],
+																		 answer=puzzle.solution[flat_array_idx],
 																		 circled=circled)
 					number += 1
 					self.hor_clues[row][col] = hor_clues_count
@@ -43,7 +42,7 @@ class State:
 					if (white) :
 						self.grid[row][col] = Cell(variety="WHITE",
 																			 number=number,
-																			 answer=puzzle.solution[row*puzzle.width + col],
+																			 answer=puzzle.solution[flat_array_idx],
 																			 circled=circled)
 						number += 1
 					self.ver_clues[row][col] = ver_clues_count
@@ -52,10 +51,8 @@ class State:
 
 				if (white) :
 					self.grid[row][col] = Cell(variety="WHITE",
-																		 answer=puzzle.solution[row*puzzle.width + col],
+																		 answer=puzzle.solution[flat_array_idx],
 																		 circled=circled)
-
-				current_index += 1
 
 		self.hor_clues_rem = [0 for i in range(hor_clues_count)]
 		self.ver_clues_rem = [0 for i in range(ver_clues_count)]
@@ -66,6 +63,7 @@ class State:
 				color = puzzle.fill[row*puzzle.width + col]
 				if color == Cell.BLACK:
 					continue
+
 				if (col != 0 and self.grid[row][col - 1].variety != "BLACK") :
 					self.hor_clues[row][col] = self.hor_clues[row][col - 1]
 				if (row != 0 and self.grid[row - 1][col].variety != "BLACK") :
