@@ -1,10 +1,10 @@
 <div id="wrapper">
 {% for row in state.grid %}
   {% for cell in row %}
-    {% if cell.variety == "BLACK" %}
+    {% if cell.variety == "." %}
       <div class="filled"></div>
     {% elif cell.number %}
-      {% if cell.variety == "WHITE_INCORRECT" %}
+      {% if cell.variety == "/" %}
         {% if cell.circled %}
           <div class="empty incorrect">
             <div class = "circle"></div>
@@ -38,7 +38,7 @@
           {% endif %}
       {% endif %}
     {% else %}
-      {% if cell.variety == "WHITE_INCORRECT" %}
+      {% if cell.variety == "/" %}
         {% if cell.circled %}
           <div class="empty incorrect">
             <div class = "circle"></div>

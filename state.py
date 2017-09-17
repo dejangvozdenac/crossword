@@ -1,214 +1,194 @@
 from cell import Cell
+from clue import Clue
+from submission import Submission
 import puz
 
 class State:
-	def __init__(self, puzzle):
-		circle_idxs = puzzle.markup().get_markup_squares()
-
-		self.grid = [[None for i in range(puzzle.width)] for j in range(puzzle.height)]
+	def __init__(self, puzzle, clues):
 		self.height = puzzle.height
 		self.width = puzzle.width
+		self.clues_across = [x for x in clues if x.direction == Clue.ACROSS]
+		self.clues_down   = [x for x in clues if x.direction == Clue.DOWN]
+		self.grid = [[None for i in range(self.width)] for j in range(self.height)]
 
-		self.hor_clues = [[None for i in range(puzzle.width)] for j in range(puzzle.height)]
-		self.ver_clues = [[None for i in range(puzzle.width)] for j in range(puzzle.height)]
-		hor_clues_count = 0
-		ver_clues_count = 0
+		circle_idxs = puzzle.markup().get_markup_squares()
 
+		self._populate_grid(puzzle, circle_idxs)
+		self._connect_with_clues(puzzle)
+
+	#private helper method
+	def _populate_grid(self, puzzle, circle_idxs):
 		number = 1 # IRL indexes by 1
-		for row in range(puzzle.height):
-			for col in range(puzzle.width):
-				flat_array_idx = row * puzzle.width + col
+		for row in range(self.height):
+			for col in range(self.width):
+				flat_array_idx = row * self.width + col
 
 				color = puzzle.fill[flat_array_idx]
 				if color == Cell.BLACK:
-					self.grid[row][col] = Cell(variety="BLACK")
+					self.grid[row][col] = Cell(variety=Cell.BLACK, x=col, y=row)
 					continue
 
-				circled = False
-				if flat_array_idx in circle_idxs:
-					circled = True
+				circled = True if flat_array_idx in circle_idxs else False
 
-				cell_starts_across_clue = self._cell_starts_across_clue(row, col)
-				cell_starts_down_clue = self._cell_starts_down_clue(row, col)
-
-				if cell_starts_across_clue or cell_starts_down_clue:
-					self.grid[row][col] = Cell(variety="WHITE",
+				if self._cell_starts_across_clue(row, col) or self._cell_starts_down_clue(row, col):
+					self.grid[row][col] = Cell(variety=Cell.WHITE,
+																		 x=col,
+																		 y=row,
 																		 number=number,
 																		 answer=puzzle.solution[flat_array_idx],
 																		 circled=circled)
 					number += 1
-					
-					if cell_starts_across_clue:
-						self.hor_clues[row][col] = hor_clues_count
-						hor_clues_count += 1
-					if cell_starts_down_clue:
-						self.ver_clues[row][col] = ver_clues_count
-						ver_clues_count += 1
-
 				else:
-					self.grid[row][col] = Cell(variety="WHITE",
+					self.grid[row][col] = Cell(variety=Cell.WHITE,
+																		 x=col,
+																		 y=row,
 																		 answer=puzzle.solution[flat_array_idx],
 																		 circled=circled)
 
-		self.hor_clues_rem = [0 for i in range(hor_clues_count)]
-		self.ver_clues_rem = [0 for i in range(ver_clues_count)]
-		self.hor_clues_capacity = [0 for i in range(hor_clues_count)]
-		self.ver_clues_capacity = [0 for i in range(ver_clues_count)]
-		for row in range(puzzle.height):
-			for col in range(puzzle.width):
-				color = puzzle.fill[row*puzzle.width + col]
-				if color == Cell.BLACK:
+	def _connect_with_clues(self, puzzle):
+		hor_clues_count = 0
+		ver_clues_count = 0
+
+		for row in range(self.height):
+			for col in range(self.width):
+				hor_clue_index = None
+				ver_clue_index = None
+
+				if puzzle.fill[row*self.width + col] == Cell.BLACK:
 					continue
 
 				if self._cell_starts_across_clue(row, col):
-					self.hor_clues[row][col] = self.hor_clues[row][col - 1]
-				if self._cell_starts_down_clue(row, col):
-					self.ver_clues[row][col] = self.ver_clues[row - 1][col]
-				
-				self.hor_clues_rem[self.hor_clues[row][col]] += 1
-				self.ver_clues_rem[self.ver_clues[row][col]] += 1
+					hor_clue_index = hor_clues_count
+					hor_clues_count += 1
+				else:
+					hor_clue_index = self._get_clue_index(row, col - 1, Clue.ACROSS)
 
-				self.hor_clues_capacity[self.hor_clues[row][col]] += 1
-				self.ver_clues_capacity[self.ver_clues[row][col]] += 1
+				if self._cell_starts_down_clue(row, col):
+					ver_clue_index = ver_clues_count
+					ver_clues_count += 1
+				else:
+					ver_clue_index = self._get_clue_index(row - 1, col, Clue.DOWN)
+				
+				self.grid[row][col].clue_across = self.clues_across[hor_clue_index]
+				self.clues_across[hor_clue_index].cells.append(self.grid[row][col])
+				self.grid[row][col].clue_down = self.clues_down[ver_clue_index]
+				self.clues_down[ver_clue_index].cells.append(self.grid[row][col])
 
 	# private helper method
 	def _cell_starts_across_clue(self, row, col):
-		return (col == 0 or self.grid[row][col - 1].variety == "BLACK")
+		return (col == 0 or self.grid[row][col - 1].variety == Cell.BLACK)
 
 	# private helper method
 	def _cell_starts_down_clue(self, row, col):
-		return (row == 0 or self.grid[row - 1][col].variety == "BLACK")
+		return (row == 0 or self.grid[row - 1][col].variety == Cell.BLACK)
+
+	def _get_clue_index(self, row, col, direction):
+		if direction == Clue.ACROSS:
+			return self.clues_across.index(self.grid[row][col].clue_across)
+		else:
+			return self.clues_down.index(self.grid[row][col].clue_down)
 
 	def parse_number(self, number, is_across):
 		for row in range(self.height):
 			for col in range(self.width):
 				if self.grid[row][col].number == number:
-					if is_across and (col == 0 or self.grid[row][col-1].variety == "BLACK"):
+					if is_across and (col == 0 or self.grid[row][col-1].variety == Cell.BLACK):
 						return row, col
-					elif not is_across and (row == 0 or self.grid[row-1][col].variety == "BLACK"):
+					elif not is_across and (row == 0 or self.grid[row-1][col].variety == Cell.BLACK):
 						return row, col
 					else:
 						return None, None
 
 	def parse_submission(self, place):
 		number, direction = place.split()
-		
-		try:
-			number = int(number)
-		except Exception, e:
-			return
 
+		number = int(number)
 
 		is_across = (direction.lower() == "a")
 		row, col = self.parse_number(number, is_across)
 		return row, col, is_across
 
-	def submit_letter_exact(self, row, col, letter, cluesAcross, cluesDown):
+	def submit_letter_exact(self, row, col, letter):
 		if (letter == ' '):
 			self.delete_letter_exact(row, col, cluesAcross, cluesDown)
-		elif self.grid[row][col].variety != "BLACK":
+		elif row < self.height and col < self.width and self.grid[row][col].variety != Cell.BLACK:
 			old_letter = self.grid[row][col].content
 			self.grid[row][col].content = letter
 			if (old_letter != ' ' and old_letter != None):
 				return
 
-			if (self.hor_clues_rem[self.hor_clues[row][col]] > 0):
-				self.hor_clues_rem[self.hor_clues[row][col]] -= 1
-			if (self.hor_clues_rem[self.hor_clues[row][col]] == 0):
-				cluesAcross[self.hor_clues[row][col]].finished = True
-
-			if (self.ver_clues_rem[self.ver_clues[row][col]] > 0):
-				self.ver_clues_rem[self.ver_clues[row][col]] -= 1
-			if (self.ver_clues_rem[self.ver_clues[row][col]] == 0):
-				cluesDown[self.ver_clues[row][col]].finished = True
-
-
-
-	def delete_letter_exact(self, row, col, cluesAcross, cluesDown):
-		if self.grid[row][col].variety != "BLACK":
+	def delete_letter_exact(self, row, col):
+		if self.grid[row][col].variety != Cell.BLACK:
 			old_letter = self.grid[row][col]
 			self.grid[row][col].content = None
 			if (old_letter == ' ' or old_letter == None):
 				return
 
-			if (self.hor_clues_rem[self.hor_clues[row][col]] < self.hor_clues_capacity[self.hor_clues[row][col]]):
-				self.hor_clues_rem[self.hor_clues[row][col]] += 1
-			if (self.hor_clues_rem[self.hor_clues[row][col]] != 0):
-				cluesAcross[self.hor_clues[row][col]].finished = False
-
-			if (self.ver_clues_rem[self.ver_clues[row][col]] < self.ver_clues_capacity[self.ver_clues[row][col]]):
-				self.ver_clues_rem[self.ver_clues[row][col]] += 1
-			if (self.ver_clues_rem[self.ver_clues[row][col]] != 0):
-				cluesDown[self.ver_clues[row][col]].finished = False
-
-	def submit_letter(self, place, offset, letter, cluesAcross, cluesDown):
-		row, col, is_across = self.parse_submission(place)
-
-		if row is None:
-			return
-
+	def submit_letter(self, row, col, offset, letter, is_across):
 		if is_across:
-			self.submit_letter_exact(row, col + offset - 1, letter, cluesAcross, cluesDown)
+			self.submit_letter_exact(row, col + offset - 1, letter)
 		else:
-			self.submit_letter_exact(row + offset - 1, col, letter, cluesAcross, cluesDown)
+			self.submit_letter_exact(row + offset - 1, col, letter)
 
-	def delete_letter(self, place, offset, cluesAcross, cluesDown):
-		row, col, is_across = self.parse_submission(place)
-
-		if row is None:
-			return
-
+	def delete_letter(self, row, col, offset, is_across):
 		if is_across:
-			self.submit_letter_exact(row, col + offset - 1, None, cluesAcross, cluesDown)
+			self.submit_letter_exact(row, col + offset - 1, None)
 		else:
-			self.submit_letter_exact(row + offset - 1, col, None, cluesAcross, cluesDown)
+			self.submit_letter_exact(row + offset - 1, col, None)
 
-	def submit_word(self, place, word, cluesAcross, cluesDown):
-		row, col, is_across = self.parse_submission(place)
-
-		if row is None:
-			return
-
+	def submit_word(self, row, col, word, is_across):
 		for i in range(len(word)):
-			self.submit_letter_exact(row, col, word[i], cluesAcross, cluesDown)
+
+			if row >= self.height or col >= self.width or self.grid[row][col].variety == Cell.BLACK:
+				return 
+
+			self.submit_letter_exact(row, col, word[i])
 			if is_across:
 				col += 1
 			else:
 				row += 1
 
-	def delete_word(self, place, cluesAcross, cluesDown):
-		row, col, is_across = self.parse_submission(place)
+	def delete_word(self, row, col, is_across):
+		while row < self.height and col < self.width and self.grid[row][col].variety != Cell.BLACK:
+			self.delete_letter_exact(row, col)
+			if is_across:
+				col += 1
+			else:
+				row += 1
+
+	def submit(self, submission_type, clue, solution = None, offset = None):
+		try:
+			row, col, is_across = self.parse_submission(clue)
+		except Exception, e:
+			print "oops"
+			return
 
 		if row is None:
 			return
 
-		while row < self.height and col < self.width and self.grid[row][col].variety != "BLACK":
-			self.delete_letter_exact(row, col, cluesAcross, cluesDown)
-			if is_across:
-				col += 1
-			else:
-				row += 1
+		if submission_type == Submission.ADD_LETTER:
+			self.submit_letter(row, col, offset, solution, is_across)
+		if submission_type == Submission.ADD_WORD:
+			self.submit_word(row, col, solution, is_across)
+		if submission_type == Submission.DELETE_LETTER:
+			self.delete_letter(row, col, offset, is_across)
+		if submission_type == Submission.DELETE_WORD:
+			self.delete_word(row, col, is_across)
 
 	def check_solution(self):
 		result = True
 		for row in range(self.height):
 			for col in range(self.width):
 				if self.grid[row][col].content != self.grid[row][col].answer:
-					self.grid[row][col].variety = "WHITE_INCORRECT"
+					self.grid[row][col].variety = Cell.WHITE_INCORRECT
 					result = False
-				elif self.grid[row][col].variety != "BLACK":
-					self.grid[row][col].variety = "WHITE"
+				elif self.grid[row][col].variety != Cell.BLACK:
+					self.grid[row][col].variety = Cell.WHITE
 
 		return result
 
 	def uncheck_solution(self):
 		for row in range(self.height):
 			for col in range(self.width):
-				if self.grid[row][col].variety == "WHITE_INCORRECT":
-					self.grid[row][col].variety = "WHITE"
-
-	def get_ver_clue(self, x, y):
-		return self.ver_clues[x][y]
-
-	def get_hor_clue(self, x, y):
-		return self.hor_clues[x][y]
+				if self.grid[row][col].variety == Cell.WHITE_INCORRECT:
+					self.grid[row][col].variety = Cell.WHITE

@@ -7,6 +7,8 @@ import parser
 from cell import Cell
 from clue import Clue
 from room import Room
+from state import State
+from submission import Submission
 
 from flask import Flask, render_template, request, redirect, url_for
 # from flask_sqlalchemy import SQLAlchemy
@@ -28,11 +30,11 @@ def new_puzzle():
     room_name = request.form["room_name"]
 
     global rooms
-    across_clues = parser.create_clues_across(date)
-    down_clues = parser.create_clues_down(date)
-    state = parser.create_state(date)
+    clues = parser.create_clues(date)
+    puzzle = parser.create_puzzle(date)
+    grid = State(puzzle, clues)
     check = None
-    rooms[room_name] = Room(across_clues, down_clues, state, check)
+    rooms[room_name] = Room(clues, grid, check)
 
     return redirect(room_name)
 
@@ -70,12 +72,12 @@ def room(room_name):
 
   # 3. The room has been joined and there is an ongoing puzzle.
   across_clues = rooms[room_name].clues["across"]
-  finished_across_clues = list(filter(lambda clue: clue.finished, across_clues))
-  unfinished_across_clues = list(filter(lambda clue: not clue.finished, across_clues))
+  finished_across_clues = list(filter(lambda clue: clue.finished(), across_clues))
+  unfinished_across_clues = list(filter(lambda clue: not clue.finished(), across_clues))
   
   down_clues = rooms[room_name].clues["down"]
-  finished_down_clues = list(filter(lambda clue: clue.finished, down_clues))
-  unfinished_down_clues = list(filter(lambda clue: not clue.finished, down_clues))
+  finished_down_clues = list(filter(lambda clue: clue.finished(), down_clues))
+  unfinished_down_clues = list(filter(lambda clue: not clue.finished(), down_clues))
 
   return render_template("index.html",
                          state=rooms[room_name].state,
@@ -108,14 +110,14 @@ def command():
 
   if command_type == "Fill":
     if position:
-      state.submit_letter(clue, int(position), solution, clues_across, clues_down)
+      state.submit(Submission.ADD_LETTER, clue, solution=solution, offset=int(position))
     else:
-      state.submit_word(clue, solution, clues_across, clues_down)
+      state.submit(Submission.ADD_WORD, clue, solution=solution)
   elif command_type == "Delete":
     if position:
-        state.delete_letter(clue, int(position), clues_across, clues_down)
+        state.submit(Submission.DELETE_LETTER, clue, offset=int(position))
     else:
-      state.delete_word(clue, clues_across, clues_down)
+      state.submit(Submission.DELETE_WORD, clue)
   elif command_type == "Check":
     rooms[room_name].check_displayed = False
     if state.check_solution():

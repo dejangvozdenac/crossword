@@ -14,41 +14,46 @@ def save_puzzle(date):
   with open("puzs/" + filename, 'wb') as f:
     f.write(response.content)
     
-def create_clues_across(date):
+
+def create_clues(date):
+	clues = []
+	add_clues_across(clues, date)
+	add_clues_down(clues, date)
+
+	return clues
+
+def add_clues_across(clues, date):
 	path_name = "puzs/" + date + ".puz"
 	if not os.path.isfile(path_name):
 		save_puzzle(date)
 	p = puz.read(path_name)
 
 	numbering = p.clue_numbering()
-	cluesAcross = []
 	for clue in numbering.across:
 		answer = ''.join(
 	        p.solution[clue['cell'] + i]
 	        for i in range(clue['len']))
-		cluesAcross.append(Clue(clue['num'], True, clue['clue'], answer, False))
-	return cluesAcross
+		clues.append(Clue(clue['num'], Clue.ACROSS, clue['clue'], answer))
+	return clues
 
-def create_clues_down(date):
+def add_clues_down(clues, date):
 	path_name = "puzs/" + date + ".puz"
 	if not os.path.isfile(path_name):
 		save_puzzle(date)
 	p = puz.read(path_name)
 
 	numbering = p.clue_numbering()
-	cluesDown = []
 	for clue in numbering.down:
 		answer = ''.join(
 	        p.solution[clue['cell'] + i]
 	        for i in range(clue['len']))
-		cluesDown.append(Clue(clue['num'], False, clue['clue'], answer, False))
-	return cluesDown
+		clues.append(Clue(clue['num'], Clue.DOWN, clue['clue'], answer))
+	return clues
 
-def create_state(date):
+def create_puzzle(date):
 	path_name = "puzs/" + date + ".puz"
 	if not os.path.isfile(path_name):
 		save_puzzle(date)
 	p = puz.read(path_name)
 	
-	state = State(p)
-	return state
+	return p

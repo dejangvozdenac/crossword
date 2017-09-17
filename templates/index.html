@@ -24,9 +24,9 @@
     
     {% for row in range(0, state.width) %}
       {% for col in range(0, state.height) %}
-        {% if state.grid[row][col].variety != "BLACK" %}
-          localStorage.setItem("v_" + {{ row }} + "_" + {{ col }} , {{ state.ver_clues[row][col] }} );
-          localStorage.setItem("h_" + {{ row }} + "_" + {{ col }} , {{ state.hor_clues[row][col] }} );
+        {% if state.grid[row][col].variety != "." %}
+          localStorage.setItem("v_" + {{ row }} + "_" + {{ col }} , {{ state._get_clue_index(row, col, False) }} );
+          localStorage.setItem("h_" + {{ row }} + "_" + {{ col }} , {{ state._get_clue_index(row, col, True) }} );
         {% endif %}
       {% endfor %}
     {% endfor %}
