@@ -1,0 +1,5 @@
+class Submission:
+	ADD_LETTER = 1
+	ADD_WORD = 2
+	DELETE_LETTER = 3
+	DELETE_WORD = 4
