@@ -2,12 +2,10 @@
 
 ## Future features:
 #### TODO
-1) refactor index.html
-2) redesign data structures
-3) when you highlight a clue it comes up in the special clue box at the top so you don't have to look for it
-4) highlight currently selected clue on the grid
-5) tabbing over to select next clue
-6) rebus
+1) highlight currently selected clue on the grid
+2) refactor the js
+3) tabbing over to select next clue
+4) rebus
 
 
 #### In Progress
@@ -17,6 +15,9 @@
 #### Done
 1) ~~circles~~ (automatic)
 2) ~~rooms~~
+3) ~refactor index.html~
+4) ~redesign data structures~
+5) ~when you highlight a clue it comes up in the special clue box at the top so you don't have to look for it~
 
 ## Notes:
 Without persistence, clues, checked, etc (variables which have to do with the state of a room) has been factored to a Room class. Now, the app holds a map of room names to Rooms in memory.
