@@ -7,6 +7,7 @@ class State:
 	def __init__(self, puzzle, clues):
 		self.height = puzzle.height
 		self.width = puzzle.width
+		self.show_incorrect_cells = False
 		self.clues_across = [x for x in clues if x.direction == Clue.ACROSS]
 		self.clues_down   = [x for x in clues if x.direction == Clue.DOWN]
 		self.grid = [[None for i in range(self.width)] for j in range(self.height)]
@@ -25,13 +26,13 @@ class State:
 
 				color = puzzle.fill[flat_array_idx]
 				if color == Cell.BLACK:
-					self.grid[row][col] = Cell(variety=Cell.BLACK, x=col, y=row)
+					self.grid[row][col] = Cell(color=Cell.BLACK, x=col, y=row)
 					continue
 
 				circled = True if flat_array_idx in circle_idxs else False
 
 				if self._cell_starts_across_clue(row, col) or self._cell_starts_down_clue(row, col):
-					self.grid[row][col] = Cell(variety=Cell.WHITE,
+					self.grid[row][col] = Cell(color=Cell.WHITE,
 																		 x=col,
 																		 y=row,
 																		 number=number,
@@ -39,7 +40,7 @@ class State:
 																		 circled=circled)
 					number += 1
 				else:
-					self.grid[row][col] = Cell(variety=Cell.WHITE,
+					self.grid[row][col] = Cell(color=Cell.WHITE,
 																		 x=col,
 																		 y=row,
 																		 answer=puzzle.solution[flat_array_idx],
@@ -76,11 +77,11 @@ class State:
 
 	# private helper method
 	def _cell_starts_across_clue(self, row, col):
-		return (col == 0 or self.grid[row][col - 1].variety == Cell.BLACK)
+		return (col == 0 or self.grid[row][col - 1].color == Cell.BLACK)
 
 	# private helper method
 	def _cell_starts_down_clue(self, row, col):
-		return (row == 0 or self.grid[row - 1][col].variety == Cell.BLACK)
+		return (row == 0 or self.grid[row - 1][col].color == Cell.BLACK)
 
 	def _get_clue_index(self, row, col, direction):
 		if direction == Clue.ACROSS:
@@ -92,9 +93,9 @@ class State:
 		for row in range(self.height):
 			for col in range(self.width):
 				if self.grid[row][col].number == number:
-					if is_across and (col == 0 or self.grid[row][col-1].variety == Cell.BLACK):
+					if is_across and self._cell_starts_across_clue(row, col):
 						return row, col
-					elif not is_across and (row == 0 or self.grid[row-1][col].variety == Cell.BLACK):
+					elif not is_across and self._cell_starts_down_clue(row, col):
 						return row, col
 					else:
 						return None, None
@@ -111,14 +112,14 @@ class State:
 	def submit_letter_exact(self, row, col, letter):
 		if (letter == ' '):
 			self.delete_letter_exact(row, col, cluesAcross, cluesDown)
-		elif row < self.height and col < self.width and self.grid[row][col].variety != Cell.BLACK:
+		elif row < self.height and col < self.width and self.grid[row][col].color != Cell.BLACK:
 			old_letter = self.grid[row][col].content
 			self.grid[row][col].content = letter
 			if (old_letter != ' ' and old_letter != None):
 				return
 
 	def delete_letter_exact(self, row, col):
-		if self.grid[row][col].variety != Cell.BLACK:
+		if self.grid[row][col].color != Cell.BLACK:
 			old_letter = self.grid[row][col]
 			self.grid[row][col].content = None
 			if (old_letter == ' ' or old_letter == None):
@@ -139,7 +140,7 @@ class State:
 	def submit_word(self, row, col, word, is_across):
 		for i in range(len(word)):
 
-			if row >= self.height or col >= self.width or self.grid[row][col].variety == Cell.BLACK:
+			if row >= self.height or col >= self.width or self.grid[row][col].color == Cell.BLACK:
 				return 
 
 			self.submit_letter_exact(row, col, word[i])
@@ -149,7 +150,7 @@ class State:
 				row += 1
 
 	def delete_word(self, row, col, is_across):
-		while row < self.height and col < self.width and self.grid[row][col].variety != Cell.BLACK:
+		while row < self.height and col < self.width and self.grid[row][col].color != Cell.BLACK:
 			self.delete_letter_exact(row, col)
 			if is_across:
 				col += 1
@@ -160,7 +161,6 @@ class State:
 		try:
 			row, col, is_across = self.parse_submission(clue)
 		except Exception, e:
-			print "oops"
 			return
 
 		if row is None:
@@ -176,19 +176,7 @@ class State:
 			self.delete_word(row, col, is_across)
 
 	def check_solution(self):
-		result = True
-		for row in range(self.height):
-			for col in range(self.width):
-				if self.grid[row][col].content != self.grid[row][col].answer:
-					self.grid[row][col].variety = Cell.WHITE_INCORRECT
-					result = False
-				elif self.grid[row][col].variety != Cell.BLACK:
-					self.grid[row][col].variety = Cell.WHITE
-
-		return result
+		self.show_incorrect_cells = True
 
 	def uncheck_solution(self):
-		for row in range(self.height):
-			for col in range(self.width):
-				if self.grid[row][col].variety == Cell.WHITE_INCORRECT:
-					self.grid[row][col].variety = Cell.WHITE
+		self.show_incorrect_cells = False

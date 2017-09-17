@@ -1,7 +1,10 @@
 {% extends "layout.html" %}
 
 {% block main %}
-  <center><h1>Crossword Puzzle</h1></center>
+  <center>
+    <h1>Crossword Puzzle</h1>
+    <div class="selected_clue" id="selected_clue"></div>
+  </center>
   <div id="wrap">
     <!-- across questions -->
     {% include 'index_across_questions.html' %}
@@ -24,9 +27,9 @@
     
     {% for row in range(0, state.width) %}
       {% for col in range(0, state.height) %}
-        {% if state.grid[row][col].variety != "." %}
-          localStorage.setItem("v_" + {{ row }} + "_" + {{ col }} , {{ state._get_clue_index(row, col, False) }} );
-          localStorage.setItem("h_" + {{ row }} + "_" + {{ col }} , {{ state._get_clue_index(row, col, True) }} );
+        {% if state.grid[row][col].color != "." %}
+          localStorage.setItem({{ row }} + "_" + {{ col }} , {{ state._get_clue_index(row, col, False) }} );
+          localStorage.setItem({{ row }} + "_" + {{ col }} , {{ state._get_clue_index(row, col, True) }} );
         {% endif %}
       {% endfor %}
     {% endfor %}
@@ -68,6 +71,7 @@
       $("#clueText").val(clueNumber + " " + direction[0]);
       $("#clueText").css("color", "red");
       $("#solutionText").focus();
+      document.getElementById("selected_clue").innerHTML = clueNumber + " " + direction + ":" + text.split(".")[1];
     });
   </script>
 {% endblock %}

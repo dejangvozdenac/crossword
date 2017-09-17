@@ -7,6 +7,12 @@ div {
   contentEditable: true;  
 }
 
+.selected_clue {
+  position: relative;
+  width: 100%;
+  height: 20px;
+}
+
 .filled {
   width: 28px;
   height: 28px;

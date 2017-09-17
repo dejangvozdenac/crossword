@@ -33,8 +33,7 @@ def new_puzzle():
     clues = parser.create_clues(date)
     puzzle = parser.create_puzzle(date)
     grid = State(puzzle, clues)
-    check = None
-    rooms[room_name] = Room(clues, grid, check)
+    rooms[room_name] = Room(clues, grid)
 
     return redirect(room_name)
 
@@ -119,22 +118,13 @@ def command():
     else:
       state.submit(Submission.DELETE_WORD, clue)
   elif command_type == "Check":
-    rooms[room_name].check_displayed = False
-    if state.check_solution():
-      rooms[room_name].check = True
-    else:
-      rooms[room_name].check = False
+    state.check_solution()
   elif command_type == "Uncheck":
-    rooms[room_name].check_displayed = True
-    rooms[room_name].check = None
     state.uncheck_solution()
   elif command_type == "New Puzzle":
     return redirect(url_for("new_puzzle", room_name=room_name))
   elif command_type == "Switch Room":
     return redirect(url_for("join"))
-
-  if rooms[room_name].check != None:
-    state.check_solution()
 
   return redirect(url_for("index", room_name=room_name))
 
