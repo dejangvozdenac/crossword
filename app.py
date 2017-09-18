@@ -9,11 +9,13 @@ from clue import Clue
 from room import Room
 
 from flask import Flask, render_template, request, redirect, url_for
-# from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
-# db = SQLAlchemy(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://jiggoha:pass_word@localhost/hobby_dev_crossword"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
 rooms = {}
 

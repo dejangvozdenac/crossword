@@ -1,7 +1,14 @@
-class Cell:
+class Cell(db.Model):
   # values that Cell.color can take:
   BLACK = "."
   WHITE = "-"
+
+  # SQLAlchemy
+  id = db.Column(db.Integer, primary_key=True)
+  variety = db.Column(db.String(10), nullable=False),
+  number = db.Column(db.String(10), nullable=False),
+  content = db.Column(db.String(1), nullable=False),
+  answer = db.Column(db.String(1), nullable=False),
 
   def __init__(self, variety, number=None, content=None, answer=None, circled=False):
     self.variety = variety
