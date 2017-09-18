@@ -17,6 +17,10 @@ class State:
 		self._populate_grid(puzzle, circle_idxs)
 		self._connect_with_clues(puzzle)
 
+		for row in range(self.height):
+			for col in range(self.width):
+				print self._get_clue_index(row, col, Clue.ACROSS)
+
 	#private helper method
 	def _populate_grid(self, puzzle, circle_idxs):
 		number = 1 # IRL indexes by 1
@@ -84,6 +88,9 @@ class State:
 		return (row == 0 or self.grid[row - 1][col].color == Cell.BLACK)
 
 	def _get_clue_index(self, row, col, direction):
+		if self.grid[row][col].color == Cell.BLACK:
+			return None
+
 		if direction == Clue.ACROSS:
 			return self.clues_across.index(self.grid[row][col].clue_across)
 		else:
@@ -111,7 +118,7 @@ class State:
 
 	def submit_letter_exact(self, row, col, letter):
 		if (letter == ' '):
-			self.delete_letter_exact(row, col, cluesAcross, cluesDown)
+			self.delete_letter_exact(row, col)
 		elif row < self.height and col < self.width and self.grid[row][col].color != Cell.BLACK:
 			old_letter = self.grid[row][col].content
 			self.grid[row][col].content = letter

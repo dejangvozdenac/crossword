@@ -28,8 +28,8 @@
     {% for row in range(0, state.width) %}
       {% for col in range(0, state.height) %}
         {% if state.grid[row][col].color != "." %}
-          localStorage.setItem({{ row }} + "_" + {{ col }} , {{ state._get_clue_index(row, col, False) }} );
-          localStorage.setItem({{ row }} + "_" + {{ col }} , {{ state._get_clue_index(row, col, True) }} );
+          localStorage.setItem("v_" + {{ row }} + "_" + {{ col }} , {{ state._get_clue_index(row, col, False) }} );
+          localStorage.setItem("h_" + {{ row }} + "_" + {{ col }} , {{ state._get_clue_index(row, col, True) }} );
         {% endif %}
       {% endfor %}
     {% endfor %}
