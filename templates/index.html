@@ -20,58 +20,7 @@
     <!-- down questions -->
     {% include 'index_down_questions.html' %}
   </div>
-
   <script>
-    document.getElementById('wrapper').style.height = 30 * {{ state.height }} + "px";
-    document.getElementById('wrapper').style.width = 30 * {{ state.width }} + "px";
-    
-    {% for row in range(0, state.width) %}
-      {% for col in range(0, state.height) %}
-        {% if state.grid[row][col].color != "." %}
-          localStorage.setItem("v_" + {{ row }} + "_" + {{ col }} , {{ state._get_clue_index(row, col, False) }} );
-          localStorage.setItem("h_" + {{ row }} + "_" + {{ col }} , {{ state._get_clue_index(row, col, True) }} );
-        {% endif %}
-      {% endfor %}
-    {% endfor %}
-
-    $(document).click(function(event) {      
-      var clueObj = event.target;
-
-      if ($(clueObj)["0"].className == "empty" || $(clueObj)["0"].className == "empty numbered" || $(clueObj)["0"].className == "letter" || $(clueObj)["0"].className == "circle") {
-        
-        if (event.shiftKey) {
-          if ($(clueObj)["0"].className == "letter"){
-            clueObj = clueObj.parentNode;
-          }
-          console.log($(clueObj).css("background") == "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box");
-          if ($(clueObj).css("background") == "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box") {
-            $(clueObj).css("background", "LightGray");
-          } else {
-            $(clueObj).css("background", "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box");
-          }
-          return;
-        }
-
-        y = Math.floor((event.pageX - document.getElementById('wrapper').getBoundingClientRect().left + 1) / 30)
-        x = Math.floor((event.pageY - document.getElementById('wrapper').getBoundingClientRect().top + 1) / 30)
-        x_order = localStorage.getItem("h_" + x + "_" + y)
-        y_order = localStorage.getItem("v_" + x + "_" + y)
-        acrossObj = document.getElementById('across_hidden').getElementsByTagName("div")[x_order]
-        downObj   = document.getElementById('down_hidden').getElementsByTagName("div")[y_order]
-        if ($("#clueText").val() == $(acrossObj).text().split(".")[0] + " " + acrossObj.parentNode.getElementsByTagName("h2")[0].innerHTML[0]) {
-          clueObj = downObj
-        } else {
-          clueObj = acrossObj
-        }
-      } 
-      var text = $(clueObj).text();
-      var clueNumber = text.split(".")[0];
-      var direction = clueObj.parentNode.getElementsByTagName("h2")[0].innerHTML;
-
-      $("#clueText").val(clueNumber + " " + direction[0]);
-      $("#clueText").css("color", "red");
-      $("#solutionText").focus();
-      document.getElementById("selected_clue").innerHTML = clueNumber + " " + direction + ":" + text.split(".")[1];
-    });
+    {% include 'script.js' %}
   </script>
 {% endblock %}

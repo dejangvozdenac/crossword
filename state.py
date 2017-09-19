@@ -17,10 +17,6 @@ class State:
 		self._populate_grid(puzzle, circle_idxs)
 		self._connect_with_clues(puzzle)
 
-		for row in range(self.height):
-			for col in range(self.width):
-				print self._get_clue_index(row, col, Clue.ACROSS)
-
 	#private helper method
 	def _populate_grid(self, puzzle, circle_idxs):
 		number = 1 # IRL indexes by 1
