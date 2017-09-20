@@ -29,23 +29,24 @@ def new_puzzle():
     date = request.form["date"]
     room_name = request.form["room_name"]
 
+    puzzle_date = datetime.datetime.strptime(date, "%y.%m.%d")
+    human_puzzle_date = puzzle_date.strftime("%m-%d-%y")
+
     global rooms
     clues = parser.create_clues(date)
     puzzle = parser.create_puzzle(date)
     grid = State(puzzle, clues)
-    rooms[room_name] = Room(clues, grid)
-
-    puzzle_date = datetime.datetime.strptime(date, "%y.%m.%d")
-    human_puzzle_date = puzzle_date.strftime("%m-%d-%y")
+    rooms[room_name] = Room(clues, grid, human_puzzle_date)
 
     return redirect(url_for("room", room_name=room_name, date=human_puzzle_date))
 
 @app.route("/")
 def index():
-  if request.args.get("room_name"):
+  room_name = request.args.get("room_name")
+  if room_name:
     return redirect(url_for("room",
-                            room_name=request.args["room_name"],
-                            date=request.args["date"]))
+                            room_name=room_name,
+                            date=rooms[room_name].puzzle_date))
 
   return redirect(url_for("join"))
 
@@ -57,7 +58,7 @@ def join():
     room_name = request.form['room_name']
     if room_name not in rooms:
       rooms[room_name] = True
-    return redirect(room_name)
+    return redirect(url_for("room", room_name=room_name))
 
 @app.route("/<room_name>/")
 def room(room_name):
@@ -92,12 +93,12 @@ def room(room_name):
                          finished_down_clues=finished_down_clues,
                          unfinished_down_clues=unfinished_down_clues,
                          room_name=room_name,
-                         date=request.args["date"])
+                         date=rooms[room_name].puzzle_date)
 
 @app.route("/command/", methods=["POST"])
 def command():
   global rooms
-
+  
   room_name = request.args.get("room_name")
   if not room_name or room_name not in rooms:
     raise Exception("Jay fucked up!") # TODO(jay): remove this after testing
@@ -132,7 +133,7 @@ def command():
   elif command_type == "Switch Room":
     return redirect(url_for("join"))
 
-  return redirect(url_for("index", room_name=room_name, date=request.args["date"]))
+  return redirect(url_for("index", room_name=room_name))
 
 if __name__ == "__main__":
   port = int(os.environ.get('PORT', 5000))
