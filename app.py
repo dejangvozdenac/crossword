@@ -35,12 +35,17 @@ def new_puzzle():
     grid = State(puzzle, clues)
     rooms[room_name] = Room(clues, grid)
 
-    return redirect(url_for("room", room_name=room_name, date=date))
+    puzzle_date = datetime.datetime.strptime(date, "%y.%m.%d")
+    human_puzzle_date = puzzle_date.strftime("%m-%d-%y")
+
+    return redirect(url_for("room", room_name=room_name, date=human_puzzle_date))
 
 @app.route("/")
 def index():
   if request.args.get("room_name"):
-    return redirect(request.args["room_name"])
+    return redirect(url_for("room",
+                            room_name=request.args["room_name"],
+                            date=request.args["date"]))
 
   return redirect(url_for("join"))
 
@@ -78,8 +83,6 @@ def room(room_name):
   finished_down_clues = list(filter(lambda clue: clue.finished(), down_clues))
   unfinished_down_clues = list(filter(lambda clue: not clue.finished(), down_clues))
 
-  puzzle_date = datetime.datetime.strptime(request.args["date"], "%y.%m.%d")
-  puzzle_date_formatted = datetime.date.today().strftime("%m-%d-%y")
   return render_template("index.html",
                          state=rooms[room_name].state,
                          across_clues=across_clues,
@@ -89,7 +92,7 @@ def room(room_name):
                          finished_down_clues=finished_down_clues,
                          unfinished_down_clues=unfinished_down_clues,
                          room_name=room_name,
-                         puzzle_date=puzzle_date_formatted)
+                         date=request.args["date"])
 
 @app.route("/command/", methods=["POST"])
 def command():
@@ -129,7 +132,7 @@ def command():
   elif command_type == "Switch Room":
     return redirect(url_for("join"))
 
-  return redirect(url_for("index", room_name=room_name))
+  return redirect(url_for("index", room_name=room_name, date=request.args["date"]))
 
 if __name__ == "__main__":
   port = int(os.environ.get('PORT', 5000))
