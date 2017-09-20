@@ -122,7 +122,7 @@ def command():
       state.submit(Submission.DELETE_WORD, clue)
   elif command_type == "Check":
     state.check_solution()
-  elif command_tyse == "Uncheck":
+  elif command_type == "Uncheck":
     state.uncheck_solution()
   elif command_type == "New Puzzle":
     return redirect(url_for("new_puzzle", room_name=room_name))
