@@ -1,10 +1,22 @@
+from flask import Flask, render_template, request, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+# app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://jiggoha:pass_word@localhost/hobby_dev_crossword"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
 from cell import Cell
 from clue import Clue
 from submission import Submission
 import puz
 
-class State:
+class State(db.Model):
 	def __init__(self, puzzle, clues):
+		circle_idxs = puzzle.markup().get_markup_squares()
+
+		self.grid = [[None for i in range(puzzle.width)] for j in range(puzzle.height)]
 		self.height = puzzle.height
 		self.width = puzzle.width
 		self.show_incorrect_cells = False
