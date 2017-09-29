@@ -7,6 +7,7 @@ class State:
 	def __init__(self, puzzle, clues):
 		self.height = puzzle.height
 		self.width = puzzle.width
+		self.puzzle = puzzle
 		self.show_incorrect_cells = False
 		self.clues_across = [x for x in clues if x.direction == Clue.ACROSS]
 		self.clues_down   = [x for x in clues if x.direction == Clue.DOWN]
@@ -70,21 +71,58 @@ class State:
 				else:
 					ver_clue_index = self._get_clue_index(row - 1, col, Clue.DOWN)
 				
-				self.grid[row][col].clue_across = self.clues_across[hor_clue_index]
-				self.clues_across[hor_clue_index].cells.append(self.grid[row][col])
-				self.grid[row][col].clue_down = self.clues_down[ver_clue_index]
-				self.clues_down[ver_clue_index].cells.append(self.grid[row][col])
+				if hor_clue_index != None:
+					self.grid[row][col].clue_across = self.clues_across[hor_clue_index]
+					self.clues_across[hor_clue_index].cells.append(self.grid[row][col])
+				if ver_clue_index != None:
+					self.grid[row][col].clue_down = self.clues_down[ver_clue_index]
+					self.clues_down[ver_clue_index].cells.append(self.grid[row][col])
+
+	def get_color(self, row, col):
+		flat_array_idx = row * self.width + col
+		if (self.puzzle.fill[flat_array_idx] == '.'):
+			return Cell.BLACK
+		else:
+			Cell.WHITE
 
 	# private helper method
 	def _cell_starts_across_clue(self, row, col):
-		return (col == 0 or self.grid[row][col - 1].color == Cell.BLACK)
+		print row, col
+		if (col == 0):
+			if (self.get_color(row, col + 1) != Cell.BLACK):
+				return True
+			else:
+				return False
+		elif (self.get_color(row, col - 1) == Cell.BLACK):
+			if (col == self.width - 1 or self.get_color(row, col + 1) == Cell.BLACK):
+				return False
+			else:
+				return True
+		else:
+			return False
 
 	# private helper method
 	def _cell_starts_down_clue(self, row, col):
-		return (row == 0 or self.grid[row - 1][col].color == Cell.BLACK)
+		print row, col
+		if (row == 0):
+			if (self.get_color(row + 1, col) != Cell.BLACK):
+				return True
+			else:
+				return False
+		elif (self.get_color(row - 1, col) == Cell.BLACK):
+			if (row == self.height - 1 or self.get_color(row + 1, col) == Cell.BLACK):
+				return False
+			else:
+				return True
+		else:
+			return False
 
 	def _get_clue_index(self, row, col, direction):
 		if self.grid[row][col].color == Cell.BLACK:
+			return None
+		if direction == Clue.ACROSS and self.grid[row][col].clue_across == None:
+			return None
+		if direction == Clue.DOWN and self.grid[row][col].clue_down == None:
 			return None
 
 		if direction == Clue.ACROSS:

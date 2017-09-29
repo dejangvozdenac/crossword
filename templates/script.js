@@ -25,8 +25,16 @@ function storeClueIndex() {
   {% for row in range(0, state.width) %}
     {% for col in range(0, state.height) %}
       {% if state.grid[row][col].color != "." %}
-        localStorage.setItem("v_" + {{ row }} + "_" + {{ col }} , {{ state._get_clue_index(row, col, False) }} );
-        localStorage.setItem("h_" + {{ row }} + "_" + {{ col }} , {{ state._get_clue_index(row, col, True) }} );
+        {% if state._get_clue_index(row, col, False) != None %}
+          localStorage.setItem("v_" + {{ row }} + "_" + {{ col }} , {{ state._get_clue_index(row, col, False) }} );
+        {% else %}
+          localStorage.setItem("v_" + {{ row }} + "_" + {{ col }} , {{ -1 }} );
+        {% endif %}
+        {% if state._get_clue_index(row, col, True) != None %}
+          localStorage.setItem("h_" + {{ row }} + "_" + {{ col }} , {{ state._get_clue_index(row, col, True) }} );
+        {% else %}
+          localStorage.setItem("h_" + {{ row }} + "_" + {{ col }} , {{ -1 }} );
+        {% endif %}
       {% endif %}
     {% endfor %}
   {% endfor %}
@@ -96,12 +104,28 @@ $(document).click(function(event) {
     x = Math.floor((event.pageY - document.getElementById('wrapper').getBoundingClientRect().top + 1) / 30)
     x_order = localStorage.getItem("h_" + x + "_" + y)
     y_order = localStorage.getItem("v_" + x + "_" + y)
-    acrossObj = document.getElementById('across_hidden').getElementsByTagName("div")[x_order]
-    downObj   = document.getElementById('down_hidden').getElementsByTagName("div")[y_order]
-    if ($("#clueText").val() == $(acrossObj).text().split(".")[0] + " " + acrossObj.parentNode.getElementsByTagName("h2")[0].innerHTML[0]) {
-      clueObj = downObj
+    
+    if (x_order != -1) {
+      acrossObj = document.getElementById('across_hidden').getElementsByTagName("div")[x_order]
     } else {
+      downObj   = document.getElementById('down_hidden').getElementsByTagName("div")[y_order]
+      clueObj = downObj
+    }
+
+    if (y_order != -1) {
+      downObj   = document.getElementById('down_hidden').getElementsByTagName("div")[y_order]
+    } else {
+      console.log(x_order)
+      acrossObj = document.getElementById('across_hidden').getElementsByTagName("div")[x_order]
       clueObj = acrossObj
+    }
+
+    if (x_order != -1 && y != -1){
+      if($("#clueText").val() == $(acrossObj).text().split(".")[0] + " " + acrossObj.parentNode.getElementsByTagName("h2")[0].innerHTML[0]) {
+        clueObj = downObj
+      } else {
+        clueObj = acrossObj
+      }
     }
   } 
   var text = $(clueObj).text();
