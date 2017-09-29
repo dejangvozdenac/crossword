@@ -85,6 +85,15 @@ function findClueIndex(direction, text) {
 $(document).click(function(event) {      
   var clueObj = event.target;
 
+  if ($(clueObj)["0"].className != "empty" && $(clueObj)["0"].className != "empty numbered" &&
+    $(clueObj)["0"].className != "letter" && 
+    clueObj.parentNode.className != "col" && clueObj.parentNode.className != "colright") 
+  {
+    return
+  } else if ($(clueObj).text() == "Across" || $(clueObj).text() == "Down") {
+    return
+  }
+
   if ($(clueObj)["0"].className == "empty" || $(clueObj)["0"].className == "empty numbered" || $(clueObj)["0"].className == "letter" || $(clueObj)["0"].className == "circle") {
     
     if (event.shiftKey) {
@@ -115,12 +124,11 @@ $(document).click(function(event) {
     if (y_order != -1) {
       downObj   = document.getElementById('down_hidden').getElementsByTagName("div")[y_order]
     } else {
-      console.log(x_order)
       acrossObj = document.getElementById('across_hidden').getElementsByTagName("div")[x_order]
       clueObj = acrossObj
     }
 
-    if (x_order != -1 && y != -1){
+    if (x_order != -1 && y_order != -1){
       if($("#clueText").val() == $(acrossObj).text().split(".")[0] + " " + acrossObj.parentNode.getElementsByTagName("h2")[0].innerHTML[0]) {
         clueObj = downObj
       } else {
@@ -128,6 +136,7 @@ $(document).click(function(event) {
       }
     }
   } 
+
   var text = $(clueObj).text();
   var clueNumber = text.split(".")[0];
   var direction = clueObj.parentNode.getElementsByTagName("h2")[0].innerHTML;
