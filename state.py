@@ -9,6 +9,8 @@ class State:
 		self.width = puzzle.width
 		self.puzzle = puzzle
 		self.show_incorrect_cells = False
+		self.current_clue_index = 0
+		self.current_clue_direction = "Across"
 		self.clues_across = [x for x in clues if x.direction == Clue.ACROSS]
 		self.clues_down   = [x for x in clues if x.direction == Clue.DOWN]
 		self.grid = [[None for i in range(self.width)] for j in range(self.height)]
@@ -206,6 +208,13 @@ class State:
 
 		if row is None:
 			return
+
+		if is_across:
+			self.current_clue_index = self._get_clue_index(row, col, Clue.ACROSS)
+			self.current_clue_direction = "Across"
+		else:
+			self.current_clue_index = self._get_clue_index(row, col, Clue.DOWN)
+			self.current_clue_direction = "Down"
 
 		if submission_type == Submission.ADD_LETTER:
 			self.submit_letter(row, col, offset, solution, is_across)

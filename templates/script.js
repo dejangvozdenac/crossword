@@ -104,6 +104,39 @@ function lastIndex(direction) {
   }
 }
 
+function initCurrentClue() {
+  {% if state.current_clue_direction == "Across" %}
+    setCurrentClue("Across", {{ state.current_clue_index }});
+  {% else %}
+    setCurrentClue("Down", {{ state.current_clue_index }});  
+  {% endif %}
+}
+
+function setCurrentClue(clueDirection, nextIndex) {
+  var nextClue = clueAtIndex(clueDirection, nextIndex);
+
+  if (nextClue == " ") {
+    clueDirection = (clueDirection == "Across") ? "Down" : "Across";
+    if (nextIndex != -1) {
+      nextIndex = 0;
+    } else {
+      nextIndex = lastIndex(clueDirection);
+      console.log(nextIndex);
+    }
+    nextClue = clueAtIndex(clueDirection, nextIndex);
+  }
+
+  var nextNumber = nextClue.split(".")[0];
+
+  markSelectedClue(clueDirection, nextIndex);
+
+  $("#clueText").val(nextNumber + " " + clueDirection[0]);
+  $("#clueText").css("color", "red");
+  $("#solutionText").focus();
+
+  document.getElementById("selected_clue").innerHTML = nextNumber + " " + clueDirection + ":" + nextClue.substr(nextNumber.length + 1);
+}
+
 $(document).click(function(event) {      
   var clueObj = event.target;
 
@@ -192,32 +225,12 @@ function TabOverToNextClue(evt) {
       var nextIndex = findClueIndex(clueDirection, clueNumber + ". " + clueText) + increment;
     }
 
-    var nextClue = clueAtIndex(clueDirection, nextIndex);
-
-    if (nextClue == " ") {
-      clueDirection = (clueDirection == "Across") ? "Down" : "Across";
-      if (nextIndex != -1) {
-        nextIndex = 0;
-      } else {
-        nextIndex = lastIndex(clueDirection);
-        console.log(nextIndex);
-      }
-      nextClue = clueAtIndex(clueDirection, nextIndex);
-    }
-
-    var nextNumber = nextClue.split(".")[0];
-
-    markSelectedClue(clueDirection, nextIndex);
-
-    $("#clueText").val(nextNumber + " " + clueDirection[0]);
-    $("#clueText").css("color", "red");
-    $("#solutionText").focus();
-
-    document.getElementById("selected_clue").innerHTML = nextNumber + " " + clueDirection + ":" + nextClue.substr(nextNumber.length + 1);
+    setCurrentClue(clueDirection, nextIndex);
   }
 }
 
 setSize();
 storeClueIndex();
 tagCellsInGrid();
+initCurrentClue();
 document.onkeydown = TabOverToNextClue;
