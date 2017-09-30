@@ -89,11 +89,19 @@ function clueAtIndex(direction, index) {
     clues = document.getElementById('down_hidden').getElementsByTagName("div");
   }
 
-  if(index >= clues.length) {
+  if(index >= clues.length || index < 0) {
     return " ";
   }
 
   return clues[index].innerHTML;
+}
+
+function lastIndex(direction) {
+  if (direction == "Across") {
+    return document.getElementById('across_hidden').getElementsByTagName("div").length - 1;
+  } else {
+    return document.getElementById('down_hidden').getElementsByTagName("div").length - 1;
+  }
 }
 
 $(document).click(function(event) {      
@@ -169,6 +177,7 @@ function TabOverToNextClue(evt) {
   if(evt.keyCode == tabKey) {
 
     evt.preventDefault();
+    var increment = evt.shiftKey ? -1 : 1;
 
     var currentClue = document.getElementById("selected_clue").innerHTML;
     if (currentClue == "") {
@@ -180,15 +189,19 @@ function TabOverToNextClue(evt) {
       var clueDirection = clueNumberAndDirection.split(" ")[1];
       var clueText = currentClue.substr(clueNumberAndDirection.length + 1);
       clueText = clueText.substr(1, clueText.length);
-      var nextIndex = findClueIndex(clueDirection, clueNumber + ". " + clueText) + 1;
+      var nextIndex = findClueIndex(clueDirection, clueNumber + ". " + clueText) + increment;
     }
 
     var nextClue = clueAtIndex(clueDirection, nextIndex);
 
-    if (nextClue == " "){
-      console.log("here")
-      nextIndex = 0;
+    if (nextClue == " ") {
       clueDirection = (clueDirection == "Across") ? "Down" : "Across";
+      if (nextIndex != -1) {
+        nextIndex = 0;
+      } else {
+        nextIndex = lastIndex(clueDirection);
+        console.log(nextIndex);
+      }
       nextClue = clueAtIndex(clueDirection, nextIndex);
     }
 
