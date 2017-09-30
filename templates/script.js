@@ -82,6 +82,20 @@ function findClueIndex(direction, text) {
   return -1;
 }
 
+function clueAtIndex(direction, index) {
+  if (direction == "Across") {
+    clues = document.getElementById('across_hidden').getElementsByTagName("div");
+  } else {
+    clues = document.getElementById('down_hidden').getElementsByTagName("div");
+  }
+
+  if(index >= clues.length) {
+    return " ";
+  }
+
+  return clues[index].innerHTML;
+}
+
 $(document).click(function(event) {      
   var clueObj = event.target;
 
@@ -149,6 +163,48 @@ $(document).click(function(event) {
   document.getElementById("selected_clue").innerHTML = clueNumber + " " + direction + ":" + text.substr(clueNumber.length + 1);
 });
 
+function TabOverToNextClue(evt) {
+  var evt = (evt) ? evt : ((event) ? event : null);
+  var tabKey = 9;
+  if(evt.keyCode == tabKey) {
+
+    evt.preventDefault();
+
+    var currentClue = document.getElementById("selected_clue").innerHTML;
+    if (currentClue == "") {
+      var nextIndex = 0;
+      var clueDirection =  "Across";
+    } else {
+      var clueNumberAndDirection = currentClue.split(":")[0];
+      var clueNumber = clueNumberAndDirection.split(" ")[0];
+      var clueDirection = clueNumberAndDirection.split(" ")[1];
+      var clueText = currentClue.substr(clueNumberAndDirection.length + 1);
+      clueText = clueText.substr(1, clueText.length);
+      var nextIndex = findClueIndex(clueDirection, clueNumber + ". " + clueText) + 1;
+    }
+
+    var nextClue = clueAtIndex(clueDirection, nextIndex);
+
+    if (nextClue == " "){
+      console.log("here")
+      nextIndex = 0;
+      clueDirection = (clueDirection == "Across") ? "Down" : "Across";
+      nextClue = clueAtIndex(clueDirection, nextIndex);
+    }
+
+    var nextNumber = nextClue.split(".")[0];
+
+    markSelectedClue(clueDirection, nextIndex);
+
+    $("#clueText").val(nextNumber + " " + clueDirection[0]);
+    $("#clueText").css("color", "red");
+    $("#solutionText").focus();
+
+    document.getElementById("selected_clue").innerHTML = nextNumber + " " + clueDirection + ":" + nextClue.substr(nextNumber.length + 1);
+  }
+}
+
 setSize();
 storeClueIndex();
 tagCellsInGrid();
+document.onkeydown = TabOverToNextClue;
