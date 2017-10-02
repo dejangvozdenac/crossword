@@ -89,7 +89,6 @@ class State:
 
 	# private helper method
 	def _cell_starts_across_clue(self, row, col):
-		print row, col
 		if (col == 0):
 			if (self.get_color(row, col + 1) != Cell.BLACK):
 				return True
@@ -105,7 +104,6 @@ class State:
 
 	# private helper method
 	def _cell_starts_down_clue(self, row, col):
-		print row, col
 		if (row == 0):
 			if (self.get_color(row + 1, col) != Cell.BLACK):
 				return True

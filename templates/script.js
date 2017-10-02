@@ -22,8 +22,8 @@ function tagCellsInGrid() {
 }
 
 function storeClueIndex() {
-  {% for row in range(0, state.width) %}
-    {% for col in range(0, state.height) %}
+  {% for row in range(0, state.height) %}
+    {% for col in range(0, state.width) %}
       {% if state.grid[row][col].color != "." %}
         {% if state._get_clue_index(row, col, False) != None %}
           localStorage.setItem("v_" + {{ row }} + "_" + {{ col }} , {{ state._get_clue_index(row, col, False) }} );
