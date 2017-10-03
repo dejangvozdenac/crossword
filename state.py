@@ -87,6 +87,10 @@ class State:
 		else:
 			Cell.WHITE
 
+	def _get_answer(self, row, col):
+		flat_array_idx = row * self.width + col
+		return ord(self.puzzle.solution[flat_array_idx])
+
 	# private helper method
 	def _cell_starts_across_clue(self, row, col):
 		if (col == 0):

@@ -13,9 +13,9 @@ function tagCellsInGrid() {
     x = Math.floor(index / width);
     y = index % width;
     if ($(elem)["0"].className != "filled"){
-      elem.id = localStorage.getItem("h_" + x + "_" + y) + "." + localStorage.getItem("v_" + x + "_" + y);
+      elem.id = localStorage.getItem("h_" + x + "_" + y) + "." + localStorage.getItem("v_" + x + "_" + y) + "." + parseInt(i / width) + "." + i % width + "." + localStorage.getItem("a_" + x + "_" + y);
     } else {
-      elem.id = "-1.-1";
+      elem.id = "-1.-1" + parseInt(i / width) + "." + i % width;
     }
     index++;
   }
@@ -25,6 +25,8 @@ function storeClueIndex() {
   {% for row in range(0, state.height) %}
     {% for col in range(0, state.width) %}
       {% if state.grid[row][col].color != "." %}
+        localStorage.setItem("a_" + {{ row }} + "_" + {{ col }} , {{ state._get_answer(row, col) }});
+
         {% if state._get_clue_index(row, col, False) != None %}
           localStorage.setItem("v_" + {{ row }} + "_" + {{ col }} , {{ state._get_clue_index(row, col, False) }} );
         {% else %}
@@ -46,6 +48,8 @@ function setSize() {
 }
 
 function markSelectedClue(direction, selectedClueIndex) {
+  firstCell = true;
+
   div = document.getElementById("wrapper");
   subDiv = div.getElementsByTagName("div");
 
@@ -60,6 +64,10 @@ function markSelectedClue(direction, selectedClueIndex) {
 
       if (targetIndex == selectedClueIndex && ($(elem)["0"].className == "empty" || $(elem)["0"].className == "empty numbered")) {
         $(elem).css("background", "LightGray");
+        if (firstCell) {
+          markCell(tags[2], tags[3]);
+          firstCell = false;
+        }
       } else if ($(elem)["0"].className != "filled"){
         $(elem).css("background", "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box");
       }
@@ -112,6 +120,91 @@ function initCurrentClue() {
   {% endif %}
 }
 
+function colorCell(row, col, color) {
+  div = document.getElementById("wrapper");
+  subDiv = div.getElementsByTagName("div");
+
+  for(var i = 0; i < subDiv.length; i++) {
+      var elem = subDiv[i];
+      tags = elem.id.split(".");
+      cell_x = tags[2];
+      cell_y = tags[3];
+
+      if (cell_x == row && cell_y == col) {
+        $(elem).css("background", color);
+      }
+  }
+}
+
+function markCell(row, col) {
+  localStorage.setItem("selectedCell",  row + "_" + col);
+  colorCell(row, col, "DarkGray");
+}
+
+
+function unmarkCell() {
+  selectedCell = localStorage.getItem("selectedCell");
+  row = parseInt(selectedCell.split("_")[0]);
+  col = parseInt(selectedCell.split("_")[1]);
+
+  colorCell(row, col, "LightGray");
+}
+
+function fillCell(row, col, key) {
+  div = document.getElementById("wrapper");
+  subDiv = div.getElementsByTagName("div");
+
+  for(var i = 0; i < subDiv.length; i++) {
+    var elem = subDiv[i];
+    tags = elem.id.split(".");
+    cell_x = tags[2];
+    cell_y = tags[3];
+
+    if (cell_x == row && cell_y == col) {
+      if (key == 32 || key == 8) {
+        elem.innerHTML = '';
+      } else {
+        elem.innerHTML = '<div class="letter" style="background: none 0% 0% / auto repeat scroll padding-box border-box rgba(0, 0, 0, 0);">' + String.fromCharCode((96 <= key && key <= 105)? key-48 : key) + '</div>';
+      }
+    }
+  }
+}
+
+function checkGrid() {
+  div = document.getElementById("wrapper");
+  subDiv = div.getElementsByTagName("div");
+
+  for(var i = 0; i < subDiv.length; i++) {
+    var elem = subDiv[i];
+    tags = elem.id.split(".");
+    cell_x = tags[2];
+    cell_y = tags[3];
+
+    if(tags[0] == -1) {
+      continue;
+    }
+
+    answer = tags[4];
+    letterDiv = elem.getElementsByTagName("div");
+
+    if (letterDiv.length == 0) {
+      continue;
+    }
+
+    console.log(answer)
+
+    content = letterDiv[0].innerHTML;
+    console.log(content);
+    console.log(String.fromCharCode(answer))
+    if (content != String.fromCharCode(answer)) {
+      $(letterDiv[0]).css("color", "red");
+    }
+  }
+}
+
+
+
+
 function setCurrentClue(clueDirection, nextIndex) {
   var nextClue = clueAtIndex(clueDirection, nextIndex);
 
@@ -121,7 +214,6 @@ function setCurrentClue(clueDirection, nextIndex) {
       nextIndex = 0;
     } else {
       nextIndex = lastIndex(clueDirection);
-      console.log(nextIndex);
     }
     nextClue = clueAtIndex(clueDirection, nextIndex);
   }
@@ -132,7 +224,7 @@ function setCurrentClue(clueDirection, nextIndex) {
 
   $("#clueText").val(nextNumber + " " + clueDirection[0]);
   $("#clueText").css("color", "red");
-  $("#solutionText").focus();
+  // $("#solutionText").focus();
 
   document.getElementById("selected_clue").innerHTML = nextNumber + " " + clueDirection + ":" + nextClue.substr(nextNumber.length + 1);
 }
@@ -155,7 +247,6 @@ $(document).click(function(event) {
       if ($(clueObj)["0"].className == "letter"){
         clueObj = clueObj.parentNode;
       }
-      console.log($(clueObj).css("background") == "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box");
       if ($(clueObj).css("background") == "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box") {
         $(clueObj).css("background", "LightGray");
       } else {
@@ -200,32 +291,110 @@ $(document).click(function(event) {
 
   $("#clueText").val(clueNumber + " " + direction[0]);
   $("#clueText").css("color", "red");
-  $("#solutionText").focus();
+  // $("#solutionText").focus();
   document.getElementById("selected_clue").innerHTML = clueNumber + " " + direction + ":" + text.substr(clueNumber.length + 1);
 });
 
-function TabOverToNextClue(evt) {
-  var evt = (evt) ? evt : ((event) ? event : null);
-  var tabKey = 9;
-  if(evt.keyCode == tabKey) {
+function GetCurrentDirection() {
+  var currentClue = document.getElementById("selected_clue").innerHTML;
+  var clueNumberAndDirection = currentClue.split(":")[0];
+  var clueNumber = clueNumberAndDirection.split(" ")[0];
+  return clueNumberAndDirection.split(" ")[1];
+}
 
-    evt.preventDefault();
-    var increment = evt.shiftKey ? -1 : 1;
+function isValid(row, col) {
+  if (row < 0 || col < 0 || row >= {{ state.height }} || col >= {{ state.width }} ) {
+    return false;
+  }
 
-    var currentClue = document.getElementById("selected_clue").innerHTML;
-    if (currentClue == "") {
-      var nextIndex = 0;
-      var clueDirection =  "Across";
-    } else {
-      var clueNumberAndDirection = currentClue.split(":")[0];
-      var clueNumber = clueNumberAndDirection.split(" ")[0];
-      var clueDirection = clueNumberAndDirection.split(" ")[1];
-      var clueText = currentClue.substr(clueNumberAndDirection.length + 1);
-      clueText = clueText.substr(1, clueText.length);
-      var nextIndex = findClueIndex(clueDirection, clueNumber + ". " + clueText) + increment;
+  for(var i = 0; i < subDiv.length; i++) {
+    var elem = subDiv[i];
+    tags = elem.id.split(".");
+    cell_x = tags[2];
+    cell_y = tags[3];
+
+    if (cell_x == row && cell_y == col) {
+      if (tags[0] == - 1 || tags[1] == - 1) {
+        return false;
+      } else {
+        return true;
+      }
     }
+  }
 
-    setCurrentClue(clueDirection, nextIndex);
+}
+
+function TabEvent(evt) {
+  evt.preventDefault();
+  var increment = evt.shiftKey ? -1 : 1;
+
+  var currentClue = document.getElementById("selected_clue").innerHTML;
+  if (currentClue == "") {
+    var nextIndex = 0;
+    var clueDirection =  "Across";
+  } else {
+    var clueNumberAndDirection = currentClue.split(":")[0];
+    var clueNumber = clueNumberAndDirection.split(" ")[0];
+    var clueDirection = clueNumberAndDirection.split(" ")[1];
+    var clueText = currentClue.substr(clueNumberAndDirection.length + 1);
+    clueText = clueText.substr(1, clueText.length);
+    var nextIndex = findClueIndex(clueDirection, clueNumber + ". " + clueText) + increment;
+  }
+
+  setCurrentClue(clueDirection, nextIndex);
+}
+
+function ArrowEvent(keyCode) {
+  selectedCell = localStorage.getItem("selectedCell");
+  x = parseInt(selectedCell.split("_")[0]);
+  y = parseInt(selectedCell.split("_")[1]);
+  if (keyCode == 40) {
+    x_offset = 1;
+    y_offset = 0;
+  } else if (keyCode == 38) {
+    x_offset = - 1;
+    y_offset = 0;
+  } else if (keyCode == 39) {
+    x_offset = 0;
+    y_offset = 1;
+  } else if (keyCode == 37) {
+    x_offset = 0;
+    y_offset = - 1;
+  }
+  if (isValid(x + x_offset, y + y_offset)) {
+    unmarkCell();
+    markCell(x + x_offset, y + y_offset);
+  }
+}
+
+function KeyPress(evt) {
+  var evt = (evt) ? evt : ((event) ? event : null);
+  if(evt.keyCode == 9) {
+    TabEvent(evt);
+  } else if (evt.keyCode == 37 || evt.keyCode == 38 || evt.keyCode == 39 || evt.keyCode == 40) {
+    ArrowEvent(evt.keyCode);
+  } else if ((evt.keyCode >= 65 && evt.keyCode <= 90) || evt.keyCode == 32 || evt.keyCode == 8) {
+    selectedCell = localStorage.getItem("selectedCell");
+    x = parseInt(selectedCell.split("_")[0]);
+    y = parseInt(selectedCell.split("_")[1]);
+
+    fillCell(x, y, evt.keyCode);
+    currendDirection = GetCurrentDirection();
+    if (currendDirection == "Across") {
+      if (evt.keyCode == 8){
+        ArrowEvent(37)
+      } else {
+        ArrowEvent(39);
+      }
+    } else {
+      if (evt.keyCode == 8){
+        ArrowEvent(38)
+      } else {
+        ArrowEvent(40);
+      }
+    }
+  } else if (evt.keyCode == 13) {
+    checkGrid();
   }
 }
 
@@ -233,4 +402,4 @@ setSize();
 storeClueIndex();
 tagCellsInGrid();
 initCurrentClue();
-document.onkeydown = TabOverToNextClue;
+document.onkeydown = KeyPress;
