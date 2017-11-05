@@ -3,9 +3,14 @@ function tagCellsInGrid() {
   div = document.getElementById("wrapper");
   subDiv = div.getElementsByTagName("div");
   index = 0;
+  circles = 0;
 
   for(var i = 0; i < subDiv.length; i++) {
     var elem = subDiv[i];
+    if ($(elem)["0"].className == "circle") {
+      circles++;
+      continue;
+    }
     if ($(elem)["0"].className != "empty" && $(elem)["0"].className != "empty numbered" && 
       $(elem)["0"].className != "filled") {
       continue;
@@ -13,9 +18,9 @@ function tagCellsInGrid() {
     x = Math.floor(index / width);
     y = index % width;
     if ($(elem)["0"].className != "filled"){
-      elem.id = localStorage.getItem("h_" + x + "_" + y) + "." + localStorage.getItem("v_" + x + "_" + y) + "." + parseInt(i / width) + "." + i % width + "." + localStorage.getItem("a_" + x + "_" + y);
+      elem.id = localStorage.getItem("h_" + x + "_" + y) + "." + localStorage.getItem("v_" + x + "_" + y) + "." + parseInt((i-circles) / width) + "." + (i-circles) % width + "." + localStorage.getItem("a_" + x + "_" + y);
     } else {
-      elem.id = "-1.-1" + parseInt(i / width) + "." + i % width;
+      elem.id = "-1.-1" + parseInt(i / width) + "." + (i-circles) % width;
     }
     index++;
   }
@@ -130,6 +135,7 @@ function colorCell(row, col, color) {
       cell_x = tags[2];
       cell_y = tags[3];
 
+
       if (cell_x == row && cell_y == col) {
         $(elem).css("background", color);
       }
@@ -161,6 +167,11 @@ function fillCell(row, col, key) {
     cell_y = tags[3];
 
     if (cell_x == row && cell_y == col) {
+      subsubDiv = elem.getElementsByTagName("div");
+      if (subsubDiv.length > 0 && subsubDiv[0].className == "circle") {
+        elem = subsubDiv[0];
+      }
+
       if (key == 32 || key == 8) {
         elem.innerHTML = '';
       } else {
@@ -176,6 +187,11 @@ function checkGrid() {
 
   for(var i = 0; i < subDiv.length; i++) {
     var elem = subDiv[i];
+
+    if (elem.className == "circle") {
+      continue;
+    }
+
     tags = elem.id.split(".");
     cell_x = tags[2];
     cell_y = tags[3];
@@ -185,17 +201,21 @@ function checkGrid() {
     }
 
     answer = tags[4];
+
+    subsubDiv = elem.getElementsByTagName("div");
+    if (subsubDiv.length > 0 && subsubDiv[0].className == "circle") {
+      elem = subsubDiv[0];
+    }
+
+
     letterDiv = elem.getElementsByTagName("div");
 
     if (letterDiv.length == 0) {
       continue;
     }
 
-    console.log(answer)
-
     content = letterDiv[0].innerHTML;
     console.log(content);
-    console.log(String.fromCharCode(answer))
     if (content != String.fromCharCode(answer)) {
       $(letterDiv[0]).css("color", "red");
     }
@@ -232,13 +252,18 @@ function setCurrentClue(clueDirection, nextIndex) {
 $(document).click(function(event) {      
   var clueObj = event.target;
 
+  if ($(clueObj)["0"].className == "circle") {
+    console.log("here");
+    clueObj = clueObj.parentNode;
+  }
+
   if ($(clueObj)["0"].className != "empty" && $(clueObj)["0"].className != "empty numbered" &&
     $(clueObj)["0"].className != "letter" && 
     clueObj.parentNode.className != "col" && clueObj.parentNode.className != "colright") 
   {
-    return
+    return;
   } else if ($(clueObj).text() == "Across" || $(clueObj).text() == "Down") {
-    return
+    return;
   }
 
   if ($(clueObj)["0"].className == "empty" || $(clueObj)["0"].className == "empty numbered" || $(clueObj)["0"].className == "letter" || $(clueObj)["0"].className == "circle") {
@@ -257,6 +282,18 @@ $(document).click(function(event) {
 
     y = Math.floor((event.pageX - document.getElementById('wrapper').getBoundingClientRect().left + 1) / 30)
     x = Math.floor((event.pageY - document.getElementById('wrapper').getBoundingClientRect().top + 1) / 30)
+
+    currentCell = localStorage.getItem("selectedCell");
+    x_current = currentCell.split("_")[0];
+    y_current = currentCell.split("_")[1];
+
+    if (x == x_current && y == y_current) {
+      CapsEvent();
+      return;
+    }
+
+
+
     x_order = localStorage.getItem("h_" + x + "_" + y)
     y_order = localStorage.getItem("v_" + x + "_" + y)
     
@@ -288,6 +325,8 @@ $(document).click(function(event) {
   var direction = clueObj.parentNode.getElementsByTagName("h2")[0].innerHTML;
 
   markSelectedClue(direction, findClueIndex(direction, text));
+  unmarkCell();
+  markCell(x,y);
 
   $("#clueText").val(clueNumber + " " + direction[0]);
   $("#clueText").css("color", "red");
@@ -344,6 +383,29 @@ function TabEvent(evt) {
   setCurrentClue(clueDirection, nextIndex);
 }
 
+function CapsEvent() {
+
+  var currentClue = document.getElementById("selected_clue").innerHTML;
+  var clueNumberAndDirection = currentClue.split(":")[0];
+  var clueNumber = clueNumberAndDirection.split(" ")[0];
+  var clueDirection = clueNumberAndDirection.split(" ")[1];
+
+  selectedCell = localStorage.getItem("selectedCell");
+  x = parseInt(selectedCell.split("_")[0]);
+  y = parseInt(selectedCell.split("_")[1]);
+  horIndex = localStorage.getItem("h_" + x + "_" + y);
+  verIndex = localStorage.getItem("v_" + x + "_" + y)
+
+
+  if (clueDirection == "Across") {
+    setCurrentClue("Down", verIndex);
+  } else {
+    setCurrentClue("Across", horIndex);
+  }
+  unmarkCell();
+  markCell(x, y);
+}
+
 function ArrowEvent(keyCode) {
   selectedCell = localStorage.getItem("selectedCell");
   x = parseInt(selectedCell.split("_")[0]);
@@ -364,6 +426,8 @@ function ArrowEvent(keyCode) {
   if (isValid(x + x_offset, y + y_offset)) {
     unmarkCell();
     markCell(x + x_offset, y + y_offset);
+    CapsEvent();
+    CapsEvent();
   }
 }
 
@@ -372,8 +436,12 @@ function KeyPress(evt) {
   if(evt.keyCode == 9) {
     TabEvent(evt);
   } else if (evt.keyCode == 37 || evt.keyCode == 38 || evt.keyCode == 39 || evt.keyCode == 40) {
+    evt.preventDefault();
     ArrowEvent(evt.keyCode);
+  } else if (evt.keyCode == 186) {
+    CapsEvent();
   } else if ((evt.keyCode >= 65 && evt.keyCode <= 90) || evt.keyCode == 32 || evt.keyCode == 8) {
+    evt.preventDefault();
     selectedCell = localStorage.getItem("selectedCell");
     x = parseInt(selectedCell.split("_")[0]);
     y = parseInt(selectedCell.split("_")[1]);
