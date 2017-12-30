@@ -1,15 +1,15 @@
-import os
-import datetime
-
-import puz
-import parser
-
 from cell import Cell
 from clue import Clue
 from room import Room
 from state import State
 from submission import Submission
 
+import os
+import datetime
+
+import puz
+import parser
+import pytz
 from flask import Flask, render_template, request, redirect, url_for
 # from flask_sqlalchemy import SQLAlchemy
 
@@ -22,8 +22,11 @@ rooms = {}
 @app.route("/new_puzzle", methods=["GET", "POST"])
 def new_puzzle():
   if request.method == "GET":
-    today = datetime.date.today().strftime("%y.%m.%d")
-    return render_template('new_puzzle.html', today=today, room_name=request.args["room_name"])
+    now_utc = datetime.datetime.now(pytz.timezone('UTC'))
+    now_eastern = now_utc.astimezone(pytz.timezone('US/Eastern'))
+    eastern_today_str = now_eastern.strftime("%y.%m.%d")
+
+    return render_template('new_puzzle.html', today=eastern_today_str, room_name=request.args["room_name"])
 
   elif request.method == "POST":
     date = request.form["date"]
